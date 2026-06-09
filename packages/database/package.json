@@ -1,0 +1,13 @@
+{
+  "name": "@kuliahpintar/database",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "migrate:push": "supabase db push",
+    "migrate:status": "supabase migration list",
+    "types:generate": "supabase gen types typescript --local > src/database.types.ts"
+  },
+  "devDependencies": {
+    "supabase": "^1.185.0"
+  }
+}
