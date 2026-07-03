@@ -6,6 +6,7 @@ import { secureHeaders } from 'hono/secure-headers'
 import { healthRoutes } from './routes/health.js'
 import { authRoutes } from './routes/auth.js'
 import { aiRoutes } from './routes/ai.js'
+import { paymentRoutes } from './routes/payment.js'
 import type { AppEnv } from './types/env.js'
 
 export const app = new Hono<AppEnv>()
@@ -25,6 +26,7 @@ app.use(
 app.route('/health', healthRoutes)
 app.route('/api/v1/auth', authRoutes)
 app.route('/api/v1/ai', aiRoutes)
+app.route('/api/v1/payment', paymentRoutes)
 
 app.notFound((c) => c.json({ error: 'Endpoint tidak ditemukan' }, 404))
 

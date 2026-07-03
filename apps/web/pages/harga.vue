@@ -5,6 +5,39 @@
   useHead({ title: 'Harga' })
 
   const user = useSupabaseUser()
+  const router = useRouter()
+  const { upgradeToPremium } = usePayment()
+
+  const memproses = ref(false)
+  const errorBayar = ref<string | null>(null)
+
+  async function handleUpgrade() {
+    // Belum login → arahkan daftar dulu
+    if (!user.value) {
+      router.push('/daftar')
+      return
+    }
+
+    memproses.value = true
+    errorBayar.value = null
+
+    try {
+      await upgradeToPremium({
+        onSuccess: () => router.push('/pembayaran/selesai?status=success'),
+        onPending: () => router.push('/pembayaran/selesai?status=pending'),
+        onError: () => {
+          errorBayar.value = 'Pembayaran gagal. Silakan coba lagi.'
+        },
+        onClose: () => {
+          memproses.value = false
+        },
+      })
+    } catch (err) {
+      errorBayar.value = err instanceof Error ? err.message : 'Gagal memulai pembayaran.'
+    } finally {
+      memproses.value = false
+    }
+  }
 
   const fiturFree = [
     '5 request AI per hari',
@@ -23,9 +56,6 @@
     'Dukungan prioritas',
     'Akses fitur baru lebih awal',
   ]
-
-  // Tujuan tombol CTA: kalau belum login → daftar, kalau sudah → alur upgrade (Midtrans, segera)
-  const ctaTo = computed(() => (user.value ? '/dashboard' : '/daftar'))
 </script>
 
 <template>
@@ -101,11 +131,17 @@
           </li>
         </ul>
         <div class="mt-8">
-          <NuxtLink :to="ctaTo" class="btn-primary block w-full py-2.5 text-center">
-            {{ user ? 'Upgrade ke Premium' : 'Mulai Premium' }}
-          </NuxtLink>
-          <p class="mt-2 text-center text-xs text-gray-400">
-            Pembayaran via Midtrans akan segera hadir
+          <button
+            :disabled="memproses"
+            class="btn-primary block w-full py-2.5 text-center disabled:opacity-60"
+            @click="handleUpgrade"
+          >
+            <span v-if="memproses">Memproses...</span>
+            <span v-else>{{ user ? 'Upgrade ke Premium' : 'Mulai Premium' }}</span>
+          </button>
+          <p v-if="errorBayar" class="mt-2 text-center text-xs text-red-500">{{ errorBayar }}</p>
+          <p v-else class="mt-2 text-center text-xs text-gray-400">
+            Pembayaran aman via Midtrans — transfer bank, e-wallet, kartu kredit
           </p>
         </div>
       </div>
