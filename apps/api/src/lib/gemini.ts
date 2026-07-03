@@ -35,6 +35,16 @@ export async function generateTextWithSystem(
   return result.response.text()
 }
 
+export async function generateJson(systemPrompt: string, userMessage: string): Promise<unknown> {
+  const model = getGenAI().getGenerativeModel({
+    model: modelName(),
+    systemInstruction: systemPrompt,
+    generationConfig: { responseMimeType: 'application/json' },
+  })
+  const result = await model.generateContent(userMessage)
+  return JSON.parse(result.response.text())
+}
+
 export async function generateChat(
   systemPrompt: string,
   history: { role: 'user' | 'model'; content: string }[],

@@ -3,7 +3,7 @@ import { Hono } from 'hono'
 import { zValidator } from '@hono/zod-validator'
 import { z } from 'zod'
 import { requireAuth } from '../middleware/auth.js'
-import { generateTextWithSystem, generateChat } from '../lib/gemini.js'
+import { generateTextWithSystem, generateChat, generateJson } from '../lib/gemini.js'
 import { checkRateLimit, logUsage } from '../lib/rateLimit.js'
 import type { AppEnv } from '../types/env.js'
 
@@ -178,6 +178,92 @@ Langsung ke hasil, jangan awali dengan kalimat pembuka seperti "Berikut hasilnya
   return c.json({
     data: {
       hasil,
+      sisaHarian: summary.sisa - 1,
+      limitHarian: summary.limit,
+    },
+  })
+})
+
+// ============================================================
+// POST /api/v1/ai/latihan
+// ============================================================
+const latihanSchema = z.object({
+  teks: z
+    .string()
+    .min(100, 'Teks materi minimal 100 karakter')
+    .max(10_000, 'Teks maksimal 10.000 karakter'),
+  jumlah: z.number().int().min(3).max(10).default(5),
+  jenis: z.enum(['pilihan_ganda', 'isian']).default('pilihan_ganda'),
+})
+
+// Validasi output AI — jangan percaya format JSON dari model begitu saja
+const soalPgSchema = z.object({
+  pertanyaan: z.string().min(1),
+  opsi: z.array(z.string().min(1)).length(4),
+  jawabanIndex: z.number().int().min(0).max(3),
+  penjelasan: z.string().min(1),
+})
+
+const soalIsianSchema = z.object({
+  pertanyaan: z.string().min(1),
+  jawaban: z.string().min(1),
+  penjelasan: z.string().min(1),
+})
+
+aiRoutes.post('/latihan', requireAuth, zValidator('json', latihanSchema), async (c) => {
+  const userId = c.get('userId')
+  const { teks, jumlah, jenis } = c.req.valid('json')
+
+  const { allowed, summary } = await checkRateLimit(userId)
+  if (!allowed) {
+    return c.json(
+      {
+        error: `Batas ${summary.limit} request/hari tercapai. Upgrade ke Premium untuk unlimited.`,
+        code: 'RATE_LIMIT_EXCEEDED',
+        data: { summary },
+      },
+      429
+    )
+  }
+
+  const formatJson =
+    jenis === 'pilihan_ganda'
+      ? `{"soal":[{"pertanyaan":"...","opsi":["...","...","...","..."],"jawabanIndex":0,"penjelasan":"..."}]}
+- opsi harus tepat 4 pilihan, hanya 1 yang benar
+- jawabanIndex adalah index opsi yang benar (0-3), acak posisinya antar soal
+- semua opsi salah harus masuk akal (distraktor yang menguji pemahaman, bukan asal)`
+      : `{"soal":[{"pertanyaan":"...","jawaban":"...","penjelasan":"..."}]}
+- jawaban adalah jawaban singkat yang benar (1-10 kata)`
+
+  const systemPrompt = `Kamu adalah pembuat soal latihan untuk mahasiswa Indonesia.
+Buat tepat ${jumlah} soal ${jenis === 'pilihan_ganda' ? 'pilihan ganda' : 'isian singkat'} HANYA berdasarkan materi yang diberikan — jangan tambahkan fakta di luar materi.
+Soal harus menguji pemahaman konsep, bukan sekadar hafalan kata.
+Penjelasan menjelaskan KENAPA jawaban itu benar, singkat dan jelas.
+Gunakan Bahasa Indonesia baku.
+Balas HANYA dengan JSON valid berformat:
+${formatJson}`
+
+  const mentah = await generateJson(systemPrompt, teks)
+
+  const parsed = z
+    .object({
+      soal: z
+        .array(jenis === 'pilihan_ganda' ? soalPgSchema : soalIsianSchema)
+        .min(1)
+        .max(jumlah),
+    })
+    .safeParse(mentah)
+
+  if (!parsed.success) {
+    console.error('Output AI tidak valid:', parsed.error.message)
+    return c.json({ error: 'AI menghasilkan format tidak valid. Silakan coba lagi.' }, 502)
+  }
+
+  logUsage(userId, 'latihan_soal', teks.length / 4).catch(console.error)
+
+  return c.json({
+    data: {
+      soal: parsed.data.soal,
       sisaHarian: summary.sisa - 1,
       limitHarian: summary.limit,
     },

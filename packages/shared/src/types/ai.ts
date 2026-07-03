@@ -49,6 +49,32 @@ export type TulisResponse = {
   limitHarian: number
 }
 
+// ── Latihan Soal ──
+export type JenisSoal = 'pilihan_ganda' | 'isian'
+
+export type SoalLatihan = {
+  pertanyaan: string
+  /** 4 opsi jawaban — hanya untuk pilihan_ganda */
+  opsi?: string[]
+  /** Index opsi yang benar (0-3) — hanya untuk pilihan_ganda */
+  jawabanIndex?: number
+  /** Jawaban benar — hanya untuk isian */
+  jawaban?: string
+  penjelasan: string
+}
+
+export type LatihanRequest = {
+  teks: string
+  jumlah?: number
+  jenis?: JenisSoal
+}
+
+export type LatihanResponse = {
+  soal: SoalLatihan[]
+  sisaHarian: number
+  limitHarian: number
+}
+
 export type AiFeature = 'rangkum' | 'tanya' | 'tulis' | 'flashcard' | 'latihan_soal'
 
 export type UsageSummary = {
