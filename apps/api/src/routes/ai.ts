@@ -269,3 +269,63 @@ ${formatJson}`
     },
   })
 })
+
+// ============================================================
+// POST /api/v1/ai/flashcard
+// ============================================================
+const flashcardSchema = z.object({
+  teks: z
+    .string()
+    .min(100, 'Teks materi minimal 100 karakter')
+    .max(10_000, 'Teks maksimal 10.000 karakter'),
+  jumlah: z.number().int().min(4).max(15).default(8),
+})
+
+const kartuSchema = z.object({
+  depan: z.string().min(1),
+  belakang: z.string().min(1),
+})
+
+aiRoutes.post('/flashcard', requireAuth, zValidator('json', flashcardSchema), async (c) => {
+  const userId = c.get('userId')
+  const { teks, jumlah } = c.req.valid('json')
+
+  const { allowed, summary } = await checkRateLimit(userId)
+  if (!allowed) {
+    return c.json(
+      {
+        error: `Batas ${summary.limit} request/hari tercapai. Upgrade ke Premium untuk unlimited.`,
+        code: 'RATE_LIMIT_EXCEEDED',
+        data: { summary },
+      },
+      429
+    )
+  }
+
+  const systemPrompt = `Kamu adalah pembuat flashcard belajar untuk mahasiswa Indonesia.
+Buat tepat ${jumlah} flashcard HANYA berdasarkan materi yang diberikan — jangan tambahkan info di luar materi.
+Sisi depan: istilah, konsep, atau pertanyaan singkat (maksimal 1 kalimat).
+Sisi belakang: definisi atau jawaban yang jelas dan padat (1-3 kalimat).
+Fokus pada konsep kunci yang penting untuk dihafal. Gunakan Bahasa Indonesia baku.
+Balas HANYA dengan JSON valid berformat:
+{"kartu":[{"depan":"...","belakang":"..."}]}`
+
+  const mentah = await generateJson(systemPrompt, teks)
+
+  const parsed = z.object({ kartu: z.array(kartuSchema).min(1).max(jumlah) }).safeParse(mentah)
+
+  if (!parsed.success) {
+    console.error('Output AI tidak valid:', parsed.error.message)
+    return c.json({ error: 'AI menghasilkan format tidak valid. Silakan coba lagi.' }, 502)
+  }
+
+  logUsage(userId, 'flashcard', teks.length / 4).catch(console.error)
+
+  return c.json({
+    data: {
+      kartu: parsed.data.kartu,
+      sisaHarian: summary.sisa - 1,
+      limitHarian: summary.limit,
+    },
+  })
+})

@@ -75,6 +75,25 @@ export type LatihanResponse = {
   limitHarian: number
 }
 
+// ── Flashcard ──
+export type Flashcard = {
+  /** Sisi depan — istilah/konsep/pertanyaan */
+  depan: string
+  /** Sisi belakang — definisi/jawaban */
+  belakang: string
+}
+
+export type FlashcardRequest = {
+  teks: string
+  jumlah?: number
+}
+
+export type FlashcardResponse = {
+  kartu: Flashcard[]
+  sisaHarian: number
+  limitHarian: number
+}
+
 export type AiFeature = 'rangkum' | 'tanya' | 'tulis' | 'flashcard' | 'latihan_soal'
 
 export type UsageSummary = {
