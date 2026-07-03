@@ -101,4 +101,7 @@ export type UsageSummary = {
   limit: number
   sisa: number
   resetAt: string
+  tier: 'free' | 'premium'
+  /** true untuk premium — tanpa batas harian */
+  unlimited: boolean
 }

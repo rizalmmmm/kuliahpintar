@@ -10,6 +10,15 @@ import type { AppEnv } from '../types/env.js'
 export const aiRoutes = new Hono<AppEnv>()
 
 // ============================================================
+// GET /api/v1/ai/usage — kuota & tier user saat ini
+// ============================================================
+aiRoutes.get('/usage', requireAuth, async (c) => {
+  const userId = c.get('userId')
+  const { summary } = await checkRateLimit(userId)
+  return c.json({ data: summary })
+})
+
+// ============================================================
 // POST /api/v1/ai/rangkum
 // ============================================================
 const rangkumSchema = z.object({
@@ -56,7 +65,7 @@ Fokus pada konsep kunci, jangan sertakan kalimat pembuka seperti "Berikut rangku
   return c.json({
     data: {
       hasil,
-      sisaHarian: summary.sisa - 1,
+      sisaHarian: summary.unlimited ? -1 : summary.sisa - 1,
       limitHarian: summary.limit,
     },
   })
@@ -117,7 +126,7 @@ Jawab langsung ke inti, jangan awali dengan kalimat pembuka seperti "Tentu, beri
   return c.json({
     data: {
       jawaban,
-      sisaHarian: summary.sisa - 1,
+      sisaHarian: summary.unlimited ? -1 : summary.sisa - 1,
       limitHarian: summary.limit,
     },
   })
@@ -178,7 +187,7 @@ Langsung ke hasil, jangan awali dengan kalimat pembuka seperti "Berikut hasilnya
   return c.json({
     data: {
       hasil,
-      sisaHarian: summary.sisa - 1,
+      sisaHarian: summary.unlimited ? -1 : summary.sisa - 1,
       limitHarian: summary.limit,
     },
   })
@@ -264,7 +273,7 @@ ${formatJson}`
   return c.json({
     data: {
       soal: parsed.data.soal,
-      sisaHarian: summary.sisa - 1,
+      sisaHarian: summary.unlimited ? -1 : summary.sisa - 1,
       limitHarian: summary.limit,
     },
   })
@@ -324,7 +333,7 @@ Balas HANYA dengan JSON valid berformat:
   return c.json({
     data: {
       kartu: parsed.data.kartu,
-      sisaHarian: summary.sisa - 1,
+      sisaHarian: summary.unlimited ? -1 : summary.sisa - 1,
       limitHarian: summary.limit,
     },
   })

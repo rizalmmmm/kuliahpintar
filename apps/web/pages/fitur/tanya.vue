@@ -187,7 +187,10 @@
           <span v-else>Kirim ➤</span>
         </button>
       </div>
-      <p v-if="sisaHarian !== null" class="mt-2 text-center text-xs text-gray-500">
+      <p
+        v-if="sisaHarian !== null && sisaHarian >= 0"
+        class="mt-2 text-center text-xs text-gray-500"
+      >
         Sisa hari ini:
         <strong :class="sisaHarian <= 1 ? 'text-orange-500' : 'text-gray-700 dark:text-gray-300'">
           {{ sisaHarian }} request gratis
