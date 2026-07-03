@@ -11,7 +11,8 @@ function getGenAI() {
   return _genAI
 }
 
-const modelName = () => process.env['GEMINI_MODEL'] ?? 'gemini-2.0-flash'
+// Default 2.5-flash — free tier gemini-2.0-flash sudah dihapus Google (quota 0)
+const modelName = () => process.env['GEMINI_MODEL'] ?? 'gemini-2.5-flash'
 
 export function getModel() {
   return getGenAI().getGenerativeModel({ model: modelName() })
@@ -31,5 +32,21 @@ export async function generateTextWithSystem(
     systemInstruction: systemPrompt,
   })
   const result = await model.generateContent(userMessage)
+  return result.response.text()
+}
+
+export async function generateChat(
+  systemPrompt: string,
+  history: { role: 'user' | 'model'; content: string }[],
+  userMessage: string
+): Promise<string> {
+  const model = getGenAI().getGenerativeModel({
+    model: modelName(),
+    systemInstruction: systemPrompt,
+  })
+  const chat = model.startChat({
+    history: history.map((m) => ({ role: m.role, parts: [{ text: m.content }] })),
+  })
+  const result = await chat.sendMessage(userMessage)
   return result.response.text()
 }
