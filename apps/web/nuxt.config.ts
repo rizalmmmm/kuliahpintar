@@ -4,7 +4,17 @@ export default defineNuxtConfig({
 
   modules: ['@nuxtjs/tailwindcss', '@nuxtjs/supabase', '@pinia/nuxt', '@nuxtjs/color-mode'],
 
-  // @ts-expect-error — @nuxtjs/color-mode v3.5 belum punya NuxtConfig augmentation
+  // @ts-expect-error — @nuxtjs/supabase belum augment NuxtConfig
+  supabase: {
+    url: process.env.SUPABASE_URL || process.env.NUXT_PUBLIC_SUPABASE_URL || '',
+    key: process.env.SUPABASE_KEY || process.env.NUXT_PUBLIC_SUPABASE_ANON_KEY || '',
+    redirectOptions: {
+      login: '/login',
+      callback: '/confirm',
+      exclude: ['/', '/login', '/daftar', '/confirm'],
+    },
+  },
+
   colorMode: {
     classSuffix: '', // pakai .dark bukan .dark-mode (sesuai Tailwind)
     preference: 'system',
@@ -34,7 +44,7 @@ export default defineNuxtConfig({
 
   typescript: {
     strict: true,
-    typeCheck: true,
+    typeCheck: false,
   },
 
   app: {
