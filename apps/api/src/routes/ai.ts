@@ -122,3 +122,64 @@ Jawab langsung ke inti, jangan awali dengan kalimat pembuka seperti "Tentu, beri
     },
   })
 })
+
+// ============================================================
+// POST /api/v1/ai/tulis
+// ============================================================
+const tulisSchema = z.object({
+  teks: z.string().min(10, 'Teks minimal 10 karakter').max(10_000, 'Teks maksimal 10.000 karakter'),
+  mode: z.enum(['kerangka', 'kembangkan', 'perbaiki']),
+  jenis: z.enum(['essay', 'laporan', 'makalah']).default('essay'),
+})
+
+aiRoutes.post('/tulis', requireAuth, zValidator('json', tulisSchema), async (c) => {
+  const userId = c.get('userId')
+  const { teks, mode, jenis } = c.req.valid('json')
+
+  const { allowed, summary } = await checkRateLimit(userId)
+  if (!allowed) {
+    return c.json(
+      {
+        error: `Batas ${summary.limit} request/hari tercapai. Upgrade ke Premium untuk unlimited.`,
+        code: 'RATE_LIMIT_EXCEEDED',
+        data: { summary },
+      },
+      429
+    )
+  }
+
+  const namaJenis: Record<typeof jenis, string> = {
+    essay: 'essay akademik',
+    laporan: 'laporan praktikum/penelitian',
+    makalah: 'makalah ilmiah',
+  }
+
+  const instruksiMode: Record<typeof mode, string> = {
+    kerangka: `Input adalah TOPIK. Buat kerangka (outline) ${namaJenis[jenis]} yang terstruktur:
+judul yang menarik, lalu bagian-bagian utama (pendahuluan, isi 2-4 sub-bagian, kesimpulan)
+dengan 2-3 poin penting per bagian. Format: heading bernomor + poin dengan tanda -.`,
+    kembangkan: `Input adalah POIN/KERANGKA. Kembangkan menjadi paragraf ${namaJenis[jenis]} yang utuh
+dan mengalir. Setiap poin jadi 1 paragraf dengan kalimat topik, penjelasan, dan transisi antar paragraf.`,
+    perbaiki: `Input adalah DRAFT tulisan. Perbaiki menjadi ${namaJenis[jenis]} yang lebih baik:
+tata bahasa, pilihan kata akademik, struktur kalimat, dan koherensi antar kalimat.
+Pertahankan ide dan argumen asli penulis — jangan menambah klaim atau fakta baru.`,
+  }
+
+  const systemPrompt = `Kamu adalah asisten penulisan akademik untuk mahasiswa Indonesia (S1-S2).
+${instruksiMode[mode]}
+Gunakan Bahasa Indonesia baku sesuai kaidah penulisan ilmiah.
+Ini alat bantu belajar — hasilmu adalah bahan yang akan dikembangkan mahasiswa sendiri.
+Langsung ke hasil, jangan awali dengan kalimat pembuka seperti "Berikut hasilnya".`
+
+  const hasil = await generateTextWithSystem(systemPrompt, teks)
+
+  logUsage(userId, 'tulis', teks.length / 4).catch(console.error)
+
+  return c.json({
+    data: {
+      hasil,
+      sisaHarian: summary.sisa - 1,
+      limitHarian: summary.limit,
+    },
+  })
+})

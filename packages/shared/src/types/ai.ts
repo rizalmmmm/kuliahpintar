@@ -32,6 +32,23 @@ export type TanyaResponse = {
   limitHarian: number
 }
 
+// ── Bantu Tulis ──
+export type ModeTulis = 'kerangka' | 'kembangkan' | 'perbaiki'
+
+export type JenisTulisan = 'essay' | 'laporan' | 'makalah'
+
+export type TulisRequest = {
+  teks: string
+  mode: ModeTulis
+  jenis?: JenisTulisan
+}
+
+export type TulisResponse = {
+  hasil: string
+  sisaHarian: number
+  limitHarian: number
+}
+
 export type AiFeature = 'rangkum' | 'tanya' | 'tulis' | 'flashcard' | 'latihan_soal'
 
 export type UsageSummary = {

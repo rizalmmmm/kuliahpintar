@@ -26,15 +26,11 @@
         <p class="text-sm text-gray-500">Tanyakan apa saja seputar materi kuliah.</p>
         <NuxtLink to="/fitur/tanya" class="btn-primary mt-auto self-start">Mulai</NuxtLink>
       </div>
-      <div class="card flex flex-col gap-2 opacity-60">
+      <div class="card flex flex-col gap-2">
         <div class="text-2xl">✍️</div>
         <h3 class="font-semibold text-gray-900 dark:text-white">Bantu Tulis</h3>
         <p class="text-sm text-gray-500">Asisten untuk essay dan laporan akademik.</p>
-        <span
-          class="mt-auto self-start rounded-full bg-gray-100 px-2 py-0.5 text-xs text-gray-500 dark:bg-gray-800"
-        >
-          Segera
-        </span>
+        <NuxtLink to="/fitur/tulis" class="btn-primary mt-auto self-start">Mulai</NuxtLink>
       </div>
     </div>
   </div>
