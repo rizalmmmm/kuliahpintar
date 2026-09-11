@@ -1,14 +1,27 @@
 <script setup lang="ts">
   // Halaman callback setelah OAuth (Google) atau klik link konfirmasi email.
-  // Client dibuat lewat @supabase/ssr dengan flowType 'pkce' + detectSessionInUrl,
-  // jadi penukaran `code` sudah berjalan otomatis. Memanggil exchangeCodeForSession
-  // manual di sini akan memakai code verifier untuk kedua kalinya dan selalu gagal —
-  // tugas halaman ini hanya menunggu sesi terbentuk sebelum pindah ke dashboard.
+  //
+  // Sudah diverifikasi pada versi yang terpasang (@supabase/ssr 0.7.0 +
+  // @supabase/auth-js 2.106.1) bahwa penukaran `code` berjalan otomatis:
+  //   - createBrowserClient memaksa flowType 'pkce' dan detectSessionInUrl di browser.
+  //   - parseParametersFromURL() membaca url.searchParams, bukan hanya hash —
+  //     jadi `?code=` memang diproses, bukan cuma fragment.
+  //   - _isPKCECallback() mencari verifier di storage dengan kunci
+  //     `<storageKey>-code-verifier`, dan @nuxtjs/supabase menyetel storageKey ke
+  //     `sb-<ref>-auth-token` — persis nama cookie verifier yang terlihat di diagnostik.
+  // Karena itu exchangeCodeForSession manual TIDAK diperlukan di sini; memanggilnya
+  // hanya akan memakai code verifier untuk kedua kalinya dan selalu gagal.
+  //
+  // Yang tidak otomatis adalah pelaporan error: _initialize() menangkap kegagalan
+  // penukaran lalu mengembalikannya sebagai { error }, sedangkan getSession() hanya
+  // `await this.initializePromise` dan membuang hasilnya. Jadi exchange yang gagal
+  // benar-benar senyap — tanpa throw, tanpa event, tanpa error dari getSession().
+  // initialize() bersifat publik dan hasilnya di-memo, jadi memanggilnya di sini
+  // mengembalikan { error } yang sama dan membuka kegagalan yang tersembunyi itu.
   definePageMeta({ layout: false })
   useHead({ title: 'Memproses Masuk' })
 
   const route = useRoute()
-  const session = useSupabaseSession()
   const supabase = useSupabaseClient()
 
   const errorMsg = ref<string | null>(null)
@@ -66,34 +79,99 @@
   const snapshot = ref<string[]>(import.meta.client ? takeSnapshot() : [])
   const authError = ref<string | null>(null)
 
-  // Kegagalan exchange otomatis tidak dilempar ke halaman, jadi ditanyakan ulang
-  // ke client untuk mendapat pesan aslinya.
-  async function captureAuthError() {
-    const { error } = await supabase.auth.getSession()
-    if (error) authError.value = `${error.name}: ${error.message}`
+  // Hasil pemeriksaan awal serta event auth dicatat tanpa mengekspos token.
+  const initializeResult = ref('belum diperiksa')
+  const initialSessionResult = ref('belum diperiksa')
+  const authEvents = ref<string[]>([])
+  let diagnosticsStartedAt = 0
+  let diagnosticsDeadline = 0
+
+  function elapsedMs() {
+    return Math.round(performance.now() - diagnosticsStartedAt)
   }
+
+  function formatAuthError(error: { name: string; message: string }) {
+    return `${error.name}: ${error.message}`
+  }
+
+  function recordAuthEvent(event: string, eventSession: unknown) {
+    if (performance.now() > diagnosticsDeadline) return
+    authEvents.value.push(
+      `+${elapsedMs()} ms ${event}: sesi ${eventSession ? 'tersedia' : 'tidak tersedia'}`
+    )
+  }
+
+  // Dibaca langsung dari window, bukan route.query: saat penukaran berhasil
+  // auth-js membuang `code` lewat history.replaceState, dan vue-router tidak ikut
+  // memperbarui route.query. Jadi kalau `code` masih ada di sini, artinya
+  // _getSessionFromURL() tidak pernah sampai ke tahap sukses.
+  const codeStillInUrl = ref('belum diperiksa')
+
+  const diagnosticReport = computed(() => [
+    ...snapshot.value,
+    `initialize() (exchange PKCE): ${initializeResult.value}`,
+    `getSession saat halaman dimuat: ${initialSessionResult.value}`,
+    `code masih di URL setelah initialize: ${codeStillInUrl.value}`,
+    'event auth selama 10 detik:',
+    ...(authEvents.value.length > 0 ? authEvents.value : ['  (belum ada event)']),
+    `authError: ${authError.value ?? '(tidak ada)'}`,
+  ])
 
   const copied = ref(false)
   async function copyReport() {
-    const report = [...snapshot.value, `authError: ${authError.value ?? '(tidak ada)'}`].join('\n')
-    await navigator.clipboard.writeText(report)
+    await navigator.clipboard.writeText(diagnosticReport.value.join('\n'))
     copied.value = true
   }
   // --- akhir diagnostik ----------------------------------------------------
 
   let timer: ReturnType<typeof setTimeout> | undefined
+  let unsubscribeAuthListener: (() => void) | undefined
+  let redirecting = false
 
-  watch(
-    session,
-    (value) => {
-      if (!value) return
-      clearTimeout(timer)
-      navigateTo('/dashboard', { replace: true })
-    },
-    { immediate: true }
-  )
+  function redirectToDashboard() {
+    if (redirecting) return
+    redirecting = true
+    clearTimeout(timer)
+    void navigateTo('/dashboard', { replace: true })
+  }
 
-  onMounted(() => {
+  onMounted(async () => {
+    diagnosticsStartedAt = performance.now()
+    diagnosticsDeadline = diagnosticsStartedAt + 10_000
+
+    // Listener dipasang sebelum await pertama. Client dibuat oleh plugin Nuxt yang
+    // langsung memanggil initialize(), jadi sesi bisa terbentuk sebelum halaman ini
+    // sempat mounted — memasang listener belakangan berarti kehilangan SIGNED_IN.
+    const { data: listener } = supabase.auth.onAuthStateChange((event, eventSession) => {
+      recordAuthEvent(event, eventSession)
+      if (eventSession) redirectToDashboard()
+    })
+    unsubscribeAuthListener = () => listener.subscription.unsubscribe()
+
+    // Satu-satunya tempat error penukaran PKCE bisa dilihat.
+    const { error: initError } = await supabase.auth.initialize()
+    initializeResult.value = initError
+      ? `+${elapsedMs()} ms GAGAL — ${formatAuthError(initError)}`
+      : `+${elapsedMs()} ms selesai tanpa error`
+    if (initError) authError.value = formatAuthError(initError)
+
+    codeStillInUrl.value = new URLSearchParams(window.location.search).has('code') ? 'YA' : 'TIDAK'
+
+    // Pemeriksaan eksplisit: kalau sesi sudah terbentuk, langsung pindah tanpa
+    // menunggu event apa pun.
+    const { data, error } = await supabase.auth.getSession()
+    if (error) {
+      authError.value ??= formatAuthError(error)
+      initialSessionResult.value = `error (${formatAuthError(error)})`
+    } else {
+      initialSessionResult.value = data.session ? 'sesi tersedia' : 'tidak ada sesi'
+    }
+
+    if (data?.session) {
+      redirectToDashboard()
+      return
+    }
+
     // Supabase mengembalikan kegagalan OAuth lewat query, bukan lewat exception
     const oauthError = queryString('error_description') ?? queryString('error')
     if (oauthError) {
@@ -101,20 +179,27 @@
       return
     }
 
-    if (session.value) return
-
     if (!queryString('code')) {
       errorMsg.value = 'Link konfirmasi tidak lengkap. Silakan ulangi proses masuk.'
       return
     }
 
+    if (initError) {
+      errorMsg.value = `Penukaran kode gagal: ${formatAuthError(initError)}`
+      return
+    }
+
+    // initialize() selesai tanpa error tapi sesi belum ada — sisakan jendela
+    // singkat untuk SIGNED_IN yang dikirim auth-js lewat setTimeout.
     timer = setTimeout(() => {
       errorMsg.value = 'Sesi gagal dibuat. Link mungkin sudah pernah dipakai atau kedaluwarsa.'
-      captureAuthError()
     }, 10_000)
   })
 
-  onBeforeUnmount(() => clearTimeout(timer))
+  onBeforeUnmount(() => {
+    clearTimeout(timer)
+    unsubscribeAuthListener?.()
+  })
 </script>
 
 <template>
@@ -133,8 +218,7 @@
           <p class="text-xs font-semibold uppercase tracking-wide text-gray-500">Diagnostik</p>
           <pre
             class="mt-2 overflow-x-auto rounded-lg bg-gray-100 p-3 text-left text-xs leading-relaxed text-gray-800 dark:bg-gray-800 dark:text-gray-200"
-            >{{ snapshot.join('\n') }}
-authError: {{ authError ?? '(tidak ada)' }}</pre
+            >{{ diagnosticReport.join('\n') }}</pre
           >
           <button type="button" class="btn-secondary mt-2 px-3 py-1.5 text-xs" @click="copyReport">
             {{ copied ? 'Tersalin' : 'Salin diagnostik' }}
