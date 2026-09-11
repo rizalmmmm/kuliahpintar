@@ -12,7 +12,16 @@ export default defineNuxtConfig({
     redirectOptions: {
       login: '/login',
       callback: '/confirm',
-      exclude: ['/', '/login', '/daftar', '/confirm', '/harga', '/pembayaran/selesai'],
+      exclude: [
+        '/',
+        '/login',
+        '/daftar',
+        '/confirm',
+        '/harga',
+        '/pembayaran/selesai',
+        '/privasi',
+        '/ketentuan',
+      ],
     },
   },
 

@@ -39,8 +39,19 @@
     </main>
 
     <footer class="border-t border-gray-200 py-8 dark:border-gray-800">
-      <div class="container mx-auto px-4 text-center text-sm text-gray-500">
-        © {{ new Date().getFullYear() }} KuliahPintar.id. Hak cipta dilindungi.
+      <div
+        class="container mx-auto flex flex-col items-center gap-3 px-4 text-center text-sm text-gray-500"
+      >
+        <nav class="flex items-center gap-4">
+          <NuxtLink to="/privasi" class="hover:text-gray-700 dark:hover:text-gray-300">
+            Kebijakan Privasi
+          </NuxtLink>
+          <span class="text-gray-300 dark:text-gray-700">·</span>
+          <NuxtLink to="/ketentuan" class="hover:text-gray-700 dark:hover:text-gray-300">
+            Ketentuan Layanan
+          </NuxtLink>
+        </nav>
+        <p>© {{ new Date().getFullYear() }} KuliahPintar.id. Hak cipta dilindungi.</p>
       </div>
     </footer>
   </div>
