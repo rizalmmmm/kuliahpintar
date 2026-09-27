@@ -71,13 +71,17 @@
       </div>
       <h1 class="mt-2 text-2xl font-bold text-gray-900 dark:text-white">📄 Rangkum Materi</h1>
       <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">
-        Tempel teks materi kuliah, AI akan merangkumnya dalam Bahasa Indonesia yang jelas.
+        Tempel teks atau upload PDF/foto materi kuliah, AI akan merangkumnya dalam Bahasa Indonesia
+        yang jelas.
       </p>
     </div>
 
     <div class="grid gap-6 lg:grid-cols-2">
       <!-- ── Input Panel ── -->
       <div class="space-y-4">
+        <!-- Upload PDF/foto -->
+        <UploadMateri :disabled="loading" :ada-teks="!!form.teks" @hasil="form.teks = $event" />
+
         <!-- Textarea -->
         <div>
           <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">

@@ -1,6 +1,7 @@
 // Rate limiting free tier — 5 AI request per hari (calendar day UTC). Premium: unlimited.
+// Ekstraksi file (upload materi) punya kuota terpisah dan TIDAK memotong kuota request AI.
 import { getSupabaseAdmin } from './supabase.js'
-import type { UsageSummary } from '@kuliahpintar/shared'
+import { UPLOAD_LIMITS, type UsageSummary } from '@kuliahpintar/shared'
 
 const FREE_TIER_LIMIT = 5
 
@@ -17,7 +18,7 @@ function tomorrowUtcStart(): string {
   return d.toISOString()
 }
 
-async function getUserTier(userId: string): Promise<'free' | 'premium'> {
+export async function getUserTier(userId: string): Promise<'free' | 'premium'> {
   const { data, error } = await getSupabaseAdmin()
     .from('profiles')
     .select('tier')
@@ -54,6 +55,7 @@ export async function checkRateLimit(userId: string): Promise<{
     .from('usage_logs')
     .select('id', { count: 'exact', head: true })
     .eq('user_id', userId)
+    .neq('feature', 'ekstrak')
     .gte('created_at', todayUtcStart())
 
   if (error) throw new Error(`Rate limit check gagal: ${error.message}`)
@@ -69,6 +71,29 @@ export async function checkRateLimit(userId: string): Promise<{
   }
 
   return { allowed: used < FREE_TIER_LIMIT, summary }
+}
+
+// Kuota ekstraksi file — free: UPLOAD_LIMITS.free.ekstrakPerHari per hari, premium: tanpa batas
+export async function checkEkstrakLimit(userId: string): Promise<{
+  allowed: boolean
+  tier: 'free' | 'premium'
+  sisa: number
+}> {
+  const tier = await getUserTier(userId)
+  if (tier === 'premium') return { allowed: true, tier, sisa: -1 }
+
+  const { count, error } = await getSupabaseAdmin()
+    .from('usage_logs')
+    .select('id', { count: 'exact', head: true })
+    .eq('user_id', userId)
+    .eq('feature', 'ekstrak')
+    .gte('created_at', todayUtcStart())
+
+  if (error) throw new Error(`Cek kuota ekstraksi gagal: ${error.message}`)
+
+  const limit = UPLOAD_LIMITS.free.ekstrakPerHari
+  const used = count ?? 0
+  return { allowed: used < limit, tier, sisa: Math.max(0, limit - used) }
 }
 
 export async function logUsage(

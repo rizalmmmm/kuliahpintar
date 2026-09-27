@@ -94,7 +94,37 @@ export type FlashcardResponse = {
   limitHarian: number
 }
 
-export type AiFeature = 'rangkum' | 'tanya' | 'tulis' | 'flashcard' | 'latihan_soal'
+// ── Upload Materi (ekstrak teks dari PDF/foto) ──
+export type EkstrakResponse = {
+  /** Teks hasil ekstraksi — sudah dipotong ke TEKS_MATERI_MAX */
+  teks: string
+  /** true bila materi lebih panjang dari batas dan teks dipotong */
+  terpotong: boolean
+  /** Sisa kuota ekstraksi hari ini, -1 untuk premium (tanpa batas) */
+  sisaEkstrak: number
+}
+
+/** Batas upload per tier — dipakai API (enforcement) dan web (validasi awal & copy UI) */
+export const UPLOAD_LIMITS = {
+  free: { maxFiles: 1, maxTotalBytes: 5 * 1024 * 1024, ekstrakPerHari: 3 },
+  premium: { maxFiles: 5, maxTotalBytes: 15 * 1024 * 1024, ekstrakPerHari: -1 },
+} as const
+
+export const UPLOAD_MIME_TYPES = [
+  'application/pdf',
+  'image/jpeg',
+  'image/png',
+  'image/webp',
+  'image/heic',
+  'image/heif',
+] as const
+
+export type UploadMimeType = (typeof UPLOAD_MIME_TYPES)[number]
+
+/** Panjang maksimal teks materi yang diterima endpoint AI */
+export const TEKS_MATERI_MAX = 10_000
+
+export type AiFeature = 'rangkum' | 'tanya' | 'tulis' | 'flashcard' | 'latihan_soal' | 'ekstrak'
 
 export type UsageSummary = {
   used: number

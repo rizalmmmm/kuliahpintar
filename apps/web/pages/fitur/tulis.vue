@@ -153,6 +153,14 @@
           </div>
         </div>
 
+        <!-- Upload PDF/foto (draft atau catatan poin) — tidak relevan untuk mode kerangka -->
+        <UploadMateri
+          v-if="form.mode !== 'kerangka'"
+          :disabled="loading"
+          :ada-teks="!!form.teks"
+          @hasil="form.teks = $event"
+        />
+
         <!-- Textarea -->
         <div>
           <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">

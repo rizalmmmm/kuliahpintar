@@ -45,12 +45,14 @@
     'Tanya AI (tutor)',
     'Bantu Tulis',
     'Latihan Soal & Flashcard',
+    'Upload PDF/foto materi (3x/hari, 1 file ≤5 MB)',
     'Semua dalam Bahasa Indonesia',
   ]
 
   const fiturPremium = [
     'Request AI tanpa batas',
     'Semua fitur tier gratis',
+    'Upload PDF/foto tanpa batas (hingga 5 file, 15 MB)',
     'Prioritas kecepatan respons',
     'Riwayat percakapan lebih panjang',
     'Dukungan prioritas',

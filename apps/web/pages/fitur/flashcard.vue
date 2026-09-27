@@ -96,7 +96,8 @@
       </NuxtLink>
       <h1 class="mt-2 text-2xl font-bold text-gray-900 dark:text-white">🃏 Flashcard</h1>
       <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">
-        Tempel materi kuliah, AI buatkan kartu hafalan. Klik kartu untuk membaliknya.
+        Tempel teks atau upload PDF/foto materi kuliah, AI buatkan kartu hafalan. Klik kartu untuk
+        membaliknya.
       </p>
     </div>
 
@@ -117,6 +118,9 @@
         />
         <div class="flex justify-between text-xs text-gray-400"><span>4</span><span>15</span></div>
       </div>
+
+      <!-- Upload PDF/foto -->
+      <UploadMateri :disabled="loading" :ada-teks="!!form.teks" @hasil="form.teks = $event" />
 
       <!-- Textarea -->
       <div>

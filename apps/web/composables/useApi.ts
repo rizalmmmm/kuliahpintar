@@ -11,17 +11,20 @@ export function useApi() {
   async function request<T>(path: string, options: RequestInit = {}): Promise<T> {
     const token = await getToken()
 
+    // FormData: biarkan browser set Content-Type multipart beserta boundary-nya
+    const isFormData = options.body instanceof FormData
+
     const res = await fetch(`${config.public.apiUrl}${path}`, {
       ...options,
       headers: {
-        'Content-Type': 'application/json',
+        ...(isFormData ? {} : { 'Content-Type': 'application/json' }),
         ...(token ? { Authorization: `Bearer ${token}` } : {}),
         ...options.headers,
       },
     })
 
     if (!res.ok) {
-      const body = (await res.json()) as { error?: string }
+      const body = (await res.json().catch(() => ({}))) as { error?: string }
       throw new Error(body.error ?? `HTTP ${res.status}`)
     }
 
@@ -35,5 +38,6 @@ export function useApi() {
     put: <T>(path: string, body: unknown) =>
       request<T>(path, { method: 'PUT', body: JSON.stringify(body) }),
     delete: <T>(path: string) => request<T>(path, { method: 'DELETE' }),
+    upload: <T>(path: string, form: FormData) => request<T>(path, { method: 'POST', body: form }),
   }
 }

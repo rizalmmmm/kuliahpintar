@@ -1,5 +1,5 @@
 // Google Gemini client — lazy init dengan abstraction layer untuk swap provider
-import { GoogleGenerativeAI } from '@google/generative-ai'
+import { FinishReason, GoogleGenerativeAI, type GenerationConfig } from '@google/generative-ai'
 
 let _genAI: GoogleGenerativeAI | null = null
 
@@ -59,4 +59,35 @@ export async function generateChat(
   })
   const result = await chat.sendMessage(userMessage)
   return result.response.text()
+}
+
+// Ekstrak teks dari file (PDF/gambar) — Gemini membaca file langsung via inlineData,
+// tanpa perlu library parsing PDF atau OCR sendiri.
+export async function extractTextFromFiles(
+  systemPrompt: string,
+  files: { mimeType: string; data: Buffer }[],
+  maxOutputTokens: number
+): Promise<{ teks: string; terpotong: boolean }> {
+  const generationConfig: GenerationConfig & { thinkingConfig?: { thinkingBudget: number } } = {
+    maxOutputTokens,
+    temperature: 0,
+    // Transkripsi tidak butuh reasoning — matikan thinking agar token output tidak habis di situ
+    thinkingConfig: { thinkingBudget: 0 },
+  }
+  const model = getGenAI().getGenerativeModel({
+    model: modelName(),
+    systemInstruction: systemPrompt,
+    generationConfig,
+  })
+  const result = await model.generateContent([
+    ...files.map((f) => ({
+      inlineData: { mimeType: f.mimeType, data: f.data.toString('base64') },
+    })),
+    { text: 'Ekstrak isi materi dari file di atas.' },
+  ])
+  const finish = result.response.candidates?.[0]?.finishReason
+  return {
+    teks: result.response.text(),
+    terpotong: finish === FinishReason.MAX_TOKENS,
+  }
 }

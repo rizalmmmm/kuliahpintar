@@ -90,7 +90,8 @@
       </NuxtLink>
       <h1 class="mt-2 text-2xl font-bold text-gray-900 dark:text-white">📝 Latihan Soal</h1>
       <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">
-        Tempel materi kuliah, AI buatkan soal latihan untuk menguji pemahamanmu.
+        Tempel teks atau upload PDF/foto materi kuliah, AI buatkan soal latihan untuk menguji
+        pemahamanmu.
       </p>
     </div>
 
@@ -145,6 +146,9 @@
         />
         <div class="flex justify-between text-xs text-gray-400"><span>3</span><span>10</span></div>
       </div>
+
+      <!-- Upload PDF/foto -->
+      <UploadMateri :disabled="loading" :ada-teks="!!form.teks" @hasil="form.teks = $event" />
 
       <!-- Textarea -->
       <div>
