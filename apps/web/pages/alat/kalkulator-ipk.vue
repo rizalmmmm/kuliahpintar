@@ -152,10 +152,10 @@
   }
 
   // ── Per semester ──
+  // Semester selalu berurutan 1..N (N = semester terbesar yang terisi / ditambahkan)
   const semesters = computed(() => {
-    const set = new Set<number>([...rows.value.map((r) => r.semester), ...semesterTambahan.value])
-    if (!set.size) set.add(1)
-    return [...set].sort((a, b) => a - b)
+    const maks = Math.max(1, ...rows.value.map((r) => r.semester), ...semesterTambahan.value)
+    return Array.from({ length: maks }, (_, i) => i + 1)
   })
 
   const formBaru = reactive<Record<number, { mata_kuliah: string; sks: number; huruf: string }>>({})
