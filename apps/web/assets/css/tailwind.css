@@ -1,3 +1,4 @@
+/* Nama file ini wajib tailwind.css — @nuxtjs/tailwindcss otomatis memuat ~/assets/css/tailwind.css */
 @tailwind base;
 @tailwind components;
 @tailwind utilities;

@@ -179,11 +179,13 @@
   const predikat = computed(() => (total.value.totalSks ? predikatLulus(total.value.ip) : null))
 
   // ── Target IPK ──
-  const target = reactive({ ipk: 3.5, sks: 20 })
+  // Kalau belum mengisi nilai per mata kuliah, IPK & SKS saat ini bisa diketik langsung
+  const target = reactive({ ipk: 3.5, sks: 20, ipkManual: 3.2, sksManual: 60 })
+  const pakaiManual = computed(() => total.value.totalSks === 0)
   const butuhIps = computed(() =>
     ipsDibutuhkan({
-      ipkSekarang: total.value.ip,
-      sksSekarang: total.value.totalSks,
+      ipkSekarang: pakaiManual.value ? Number(target.ipkManual) || 0 : total.value.ip,
+      sksSekarang: pakaiManual.value ? Number(target.sksManual) || 0 : total.value.totalSks,
       targetIpk: target.ipk,
       sksBerikutnya: target.sks,
     })
@@ -207,7 +209,8 @@
   <div class="container mx-auto max-w-3xl px-4 py-8">
     <h1 class="text-2xl font-bold text-gray-900 dark:text-white">🎓 Kalkulator IPK & IPS</h1>
     <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">
-      Masukkan nilai tiap mata kuliah, IPS dan IPK dihitung otomatis.
+      Ketik nama mata kuliah, pilih SKS dan nilai huruf, lalu klik <strong>Tambah</strong> — IPS dan
+      IPK dihitung otomatis.
       <template v-if="!pakaiCloud">
         Data tersimpan di browser ini —
         <NuxtLink to="/login" class="text-primary-600 hover:underline">masuk</NuxtLink>
@@ -341,6 +344,29 @@
     <!-- Target IPK -->
     <section class="card mt-8">
       <h2 class="font-semibold text-gray-900 dark:text-white">🎯 Target IPK</h2>
+      <div
+        v-if="pakaiManual"
+        class="mt-3 flex flex-wrap items-center gap-2 text-sm text-gray-700 dark:text-gray-300"
+      >
+        IPK saat ini
+        <input
+          v-model.number="target.ipkManual"
+          type="number"
+          step="0.01"
+          min="0"
+          max="4"
+          class="input w-20 px-2 py-1 text-center"
+        />
+        dari
+        <input
+          v-model.number="target.sksManual"
+          type="number"
+          min="0"
+          max="300"
+          class="input w-20 px-2 py-1 text-center"
+        />
+        SKS yang sudah ditempuh
+      </div>
       <div class="mt-3 flex flex-wrap items-center gap-2 text-sm text-gray-700 dark:text-gray-300">
         Ingin IPK
         <input
@@ -362,8 +388,7 @@
         SKS semester depan
       </div>
       <p class="mt-3 text-sm">
-        <template v-if="!total.totalSks">Isi nilai semester sebelumnya dulu.</template>
-        <template v-else-if="Number.isNaN(butuhIps)">Isi jumlah SKS semester depan.</template>
+        <template v-if="Number.isNaN(butuhIps)">Isi jumlah SKS semester depan.</template>
         <template v-else-if="butuhIps > 4">
           <span class="text-red-600">Belum bisa tercapai semester depan</span> — butuh IPS
           {{ butuhIps.toFixed(2) }} (di atas 4,00). Coba target bertahap.
