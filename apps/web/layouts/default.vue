@@ -42,7 +42,15 @@
       <div
         class="container mx-auto flex flex-col items-center gap-3 px-4 text-center text-sm text-gray-500"
       >
-        <nav class="flex items-center gap-4">
+        <nav class="flex flex-wrap items-center justify-center gap-4">
+          <NuxtLink to="/alat/kalkulator-ipk" class="hover:text-gray-700 dark:hover:text-gray-300">
+            Kalkulator IPK
+          </NuxtLink>
+          <span class="text-gray-300 dark:text-gray-700">·</span>
+          <NuxtLink to="/alat/daftar-pustaka" class="hover:text-gray-700 dark:hover:text-gray-300">
+            Generator Daftar Pustaka
+          </NuxtLink>
+          <span class="text-gray-300 dark:text-gray-700">·</span>
           <NuxtLink to="/privasi" class="hover:text-gray-700 dark:hover:text-gray-300">
             Kebijakan Privasi
           </NuxtLink>

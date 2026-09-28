@@ -21,6 +21,9 @@ export default defineNuxtConfig({
         '/pembayaran/selesai',
         '/privasi',
         '/ketentuan',
+        // Alat publik tanpa login (untuk pengunjung dari Google)
+        '/alat/kalkulator-ipk',
+        '/alat/daftar-pustaka',
       ],
     },
   },

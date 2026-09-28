@@ -10,6 +10,28 @@
   const user = useSupabaseUser()
   const api = useApi()
 
+  const alatBelajar = [
+    {
+      to: '/alat/jadwal',
+      ikon: '🗓️',
+      judul: 'Jadwal & Tugas',
+      desc: 'Deadline + pengingat email H-1',
+    },
+    {
+      to: '/alat/kalkulator-ipk',
+      ikon: '🎓',
+      judul: 'Kalkulator IPK',
+      desc: 'IPS, IPK, target nilai',
+    },
+    {
+      to: '/alat/daftar-pustaka',
+      ikon: '📚',
+      judul: 'Daftar Pustaka',
+      desc: 'APA, IEEE, Harvard otomatis',
+    },
+    { to: '/alat/fokus', ikon: '⏱️', judul: 'Timer Fokus', desc: 'Pomodoro + streak belajar' },
+  ]
+
   const usage = ref<UsageSummary | null>(null)
   onMounted(async () => {
     try {
@@ -62,7 +84,10 @@
       </div>
     </div>
 
-    <div class="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+    <RingkasanHariIni class="mt-6" />
+
+    <h2 class="mt-10 text-lg font-semibold text-gray-900 dark:text-white">Fitur AI</h2>
+    <div class="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
       <div class="card flex flex-col gap-2">
         <div class="text-2xl">📄</div>
         <h3 class="font-semibold text-gray-900 dark:text-white">Rangkum Materi</h3>
@@ -93,6 +118,21 @@
         <p class="text-sm text-gray-500">Kartu hafalan otomatis dari materi kuliah.</p>
         <NuxtLink to="/fitur/flashcard" class="btn-primary mt-auto self-start">Mulai</NuxtLink>
       </div>
+    </div>
+    <!-- Alat Belajar (tanpa AI — tidak memotong kuota harian) -->
+    <h2 class="mt-10 text-lg font-semibold text-gray-900 dark:text-white">Alat Belajar</h2>
+    <p class="text-sm text-gray-500">Gratis tanpa batas — tidak memakai kuota AI harian.</p>
+    <div class="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      <NuxtLink
+        v-for="a in alatBelajar"
+        :key="a.to"
+        :to="a.to"
+        class="card flex flex-col gap-1 transition-colors hover:border-primary-400"
+      >
+        <span class="text-2xl">{{ a.ikon }}</span>
+        <span class="font-semibold text-gray-900 dark:text-white">{{ a.judul }}</span>
+        <span class="text-sm text-gray-500">{{ a.desc }}</span>
+      </NuxtLink>
     </div>
   </div>
 </template>
