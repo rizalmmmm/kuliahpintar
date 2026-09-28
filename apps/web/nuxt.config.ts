@@ -3,7 +3,14 @@ export default defineNuxtConfig({
   compatibilityDate: '2026-09-10',
   devtools: { enabled: true },
 
-  modules: ['@nuxtjs/tailwindcss', '@nuxtjs/supabase', '@pinia/nuxt', '@nuxtjs/color-mode'],
+  modules: [
+    '@nuxtjs/tailwindcss',
+    '@nuxtjs/supabase',
+    '@pinia/nuxt',
+    '@nuxtjs/color-mode',
+    // Vercel Web Analytics — jumlah pengunjung & halaman populer (aktifkan juga di dashboard Vercel)
+    '@vercel/analytics/nuxt',
+  ],
 
   // @ts-expect-error — @nuxtjs/supabase belum augment NuxtConfig
   supabase: {
