@@ -11,10 +11,14 @@
   } from '@kuliahpintar/shared'
 
   definePageMeta({ layout: 'default' })
+  const judulSeo = 'Generator Daftar Pustaka Otomatis (APA, IEEE, Harvard)'
+  const deskripsiSeo =
+    'Buat daftar pustaka otomatis dari DOI, link jurnal, atau judul artikel. Gaya APA 7, IEEE, Harvard, MLA, Chicago. Gratis untuk mahasiswa.'
   useSeoMeta({
-    title: 'Generator Daftar Pustaka Otomatis (APA, IEEE, Harvard)',
-    description:
-      'Buat daftar pustaka otomatis dari DOI, link jurnal, atau judul artikel. Gaya APA 7, IEEE, Harvard, MLA, Chicago. Gratis untuk mahasiswa.',
+    title: judulSeo,
+    description: deskripsiSeo,
+    ogTitle: `${judulSeo} — KuliahPintar.id`,
+    ogDescription: deskripsiSeo,
   })
 
   const api = useApi()

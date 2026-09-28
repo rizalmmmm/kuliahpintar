@@ -1,0 +1,13 @@
+# robots.txt — KuliahPintar.id
+User-agent: *
+Allow: /
+
+# Halaman pribadi / butuh login — tidak perlu diindeks
+Disallow: /dashboard
+Disallow: /fitur/
+Disallow: /alat/jadwal
+Disallow: /alat/fokus
+Disallow: /confirm
+Disallow: /pembayaran/
+
+Sitemap: https://kuliahpintar.id/sitemap.xml

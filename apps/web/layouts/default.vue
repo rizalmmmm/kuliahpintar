@@ -1,35 +1,43 @@
 <script setup lang="ts">
   // Layout utama dengan navbar dan footer
+  const user = useSupabaseUser()
 </script>
 
 <template>
   <div class="flex min-h-screen flex-col">
     <header
-      class="sticky top-0 z-50 border-b border-gray-200 bg-white/95 backdrop-blur dark:border-gray-800 dark:bg-gray-950/95"
+      class="sticky top-0 z-50 border-b border-gray-200 bg-white/90 backdrop-blur dark:border-gray-800 dark:bg-gray-950/90"
     >
-      <div class="container mx-auto flex h-16 items-center justify-between px-4">
-        <NuxtLink to="/" class="text-xl font-bold text-primary-600"> KuliahPintar.id </NuxtLink>
+      <div class="container mx-auto flex h-16 items-center justify-between gap-3 px-4">
+        <NuxtLink to="/" class="text-lg font-bold text-primary-600 sm:text-xl">
+          KuliahPintar<span class="text-gray-900 dark:text-white">.id</span>
+        </NuxtLink>
 
-        <nav class="flex items-center gap-6">
+        <nav class="flex items-center gap-3 sm:gap-6" aria-label="Navigasi utama">
           <NuxtLink
-            to="/fitur"
-            class="text-sm text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white"
+            to="/#fitur"
+            class="hidden text-sm text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white sm:inline"
           >
             Fitur
           </NuxtLink>
           <NuxtLink
             to="/harga"
-            class="text-sm text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white"
+            class="hidden text-sm text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white sm:inline"
           >
             Harga
           </NuxtLink>
-          <NuxtLink
-            to="/login"
-            class="text-sm font-medium text-gray-700 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white"
-          >
-            Masuk
-          </NuxtLink>
-          <NuxtLink to="/daftar" class="btn-primary"> Daftar Gratis </NuxtLink>
+          <template v-if="user">
+            <NuxtLink to="/dashboard" class="btn-primary whitespace-nowrap">Dashboard</NuxtLink>
+          </template>
+          <template v-else>
+            <NuxtLink
+              to="/login"
+              class="text-sm font-medium text-gray-700 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white"
+            >
+              Masuk
+            </NuxtLink>
+            <NuxtLink to="/daftar" class="btn-primary whitespace-nowrap">Daftar Gratis</NuxtLink>
+          </template>
         </nav>
       </div>
     </header>

@@ -14,10 +14,14 @@
   } from '@kuliahpintar/shared'
 
   definePageMeta({ layout: 'default' })
+  const judulSeo = 'Kalkulator IPK & IPS Online'
+  const deskripsiSeo =
+    'Hitung IPK dan IPS per semester, target IPK, dan nilai UAS yang dibutuhkan. Skala A/A-/B+ atau AB/BC. Gratis untuk mahasiswa Indonesia.'
   useSeoMeta({
-    title: 'Kalkulator IPK & IPS Online',
-    description:
-      'Hitung IPK dan IPS per semester, target IPK, dan nilai UAS yang dibutuhkan. Skala A/A-/B+ atau AB/BC. Gratis untuk mahasiswa Indonesia.',
+    title: judulSeo,
+    description: deskripsiSeo,
+    ogTitle: `${judulSeo} — KuliahPintar.id`,
+    ogDescription: deskripsiSeo,
   })
 
   const supabase = useSupabaseClient()

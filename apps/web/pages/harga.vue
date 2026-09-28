@@ -2,7 +2,11 @@
   import { PREMIUM_PRICE_IDR, formatRupiah } from '@kuliahpintar/shared'
 
   definePageMeta({ layout: 'default' })
-  useHead({ title: 'Harga' })
+  useHead({ title: 'Harga Paket Gratis & Premium' })
+  useSeoMeta({
+    description:
+      'Mulai gratis dengan kuota harian, atau pilih Premium untuk pemakaian tanpa batas. Bandingkan paket KuliahPintar.id untuk mahasiswa.',
+  })
 
   const user = useSupabaseUser()
   const router = useRouter()
