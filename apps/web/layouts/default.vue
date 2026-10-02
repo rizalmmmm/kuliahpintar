@@ -26,6 +26,12 @@
           >
             Harga
           </NuxtLink>
+          <NuxtLink
+            to="/ulasan"
+            class="text-sm text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white"
+          >
+            Ulasan
+          </NuxtLink>
           <template v-if="user">
             <NuxtLink to="/dashboard" class="btn-primary whitespace-nowrap">Dashboard</NuxtLink>
           </template>
@@ -57,6 +63,10 @@
           <span class="text-gray-300 dark:text-gray-700">·</span>
           <NuxtLink to="/alat/daftar-pustaka" class="hover:text-gray-700 dark:hover:text-gray-300">
             Generator Daftar Pustaka
+          </NuxtLink>
+          <span class="text-gray-300 dark:text-gray-700">·</span>
+          <NuxtLink to="/ulasan" class="hover:text-gray-700 dark:hover:text-gray-300">
+            Ulasan
           </NuxtLink>
           <span class="text-gray-300 dark:text-gray-700">·</span>
           <NuxtLink to="/privasi" class="hover:text-gray-700 dark:hover:text-gray-300">

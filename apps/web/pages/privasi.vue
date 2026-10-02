@@ -40,6 +40,11 @@
             pembayaran.
           </li>
           <li>
+            <strong>Ulasan.</strong> Jika kamu menulis ulasan, rating, isi ulasan, serta nama dan
+            foto profil Google-mu ditampilkan publik di halaman Ulasan. Kamu bisa mengubah atau
+            menghapusnya kapan saja.
+          </li>
+          <li>
             <strong>Data pemakaian.</strong> Setiap kali kamu memakai fitur AI, kami mencatat nama
             fitur yang dipakai dan waktunya — dipakai untuk menghitung kuota harian tier gratis.
             Kami <strong>tidak menyimpan isi</strong> teks yang kamu masukkan ke fitur AI.
