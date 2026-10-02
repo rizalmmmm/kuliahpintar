@@ -73,6 +73,29 @@ WHERE s.status = 'inactive' AND s.midtrans_order_id LIKE 'MANUAL-%'
 ORDER BY s.created_at DESC;
 ```
 
+### Panel admin (`/admin`)
+
+Cara yang lebih mudah daripada SQL: buka `/admin/masuk`, masuk dengan nomor HP
+admin (**082210002535**) + kode OTP SMS, lalu di `/admin`:
+
+- **Menunggu verifikasi** — pesanan `MANUAL-*`, tombol Aktifkan / Tolak
+- **Aktifkan lewat email** — untuk yang transfer tanpa membuat pesanan
+  (memperpanjang 30 hari bila Premium masih aktif)
+- **Premium aktif** — tanggal berakhir, tombol Cabut (belum ada penurunan otomatis
+  saat masa aktif habis)
+
+Akses dicek di server (`apps/api/src/middleware/admin.ts`): hanya akun dengan nomor
+HP terverifikasi yang ada di env `ADMIN_PHONES` (default `6282210002535`).
+
+Setup sekali:
+
+1. Jalankan migrasi `004_login_nomor_hp.sql` (akun nomor HP tidak punya email)
+2. Supabase Dashboard → Authentication → Sign In / Providers → **Phone**: aktifkan dan
+   isi kredensial penyedia SMS (Twilio, MessageBird, Vonage, atau Textlocal).
+   Ada biaya per SMS dari penyedia tersebut.
+3. Atur batas kirim SMS di Authentication → Rate Limits supaya kredit SMS tidak
+   dihabiskan orang lain yang iseng meminta OTP.
+
 ## Alur Pembayaran (Midtrans — belum aktif)
 
 ```

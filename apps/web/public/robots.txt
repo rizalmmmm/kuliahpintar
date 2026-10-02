@@ -9,5 +9,6 @@ Disallow: /alat/jadwal
 Disallow: /alat/fokus
 Disallow: /confirm
 Disallow: /pembayaran/
+Disallow: /admin
 
 Sitemap: https://kuliahpintar.id/sitemap.xml
