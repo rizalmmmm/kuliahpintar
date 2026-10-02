@@ -3,6 +3,12 @@
   import { MANUAL_PAYMENT_ACCOUNT } from '@kuliahpintar/shared'
 
   const user = useSupabaseUser()
+  const supabase = useSupabaseClient()
+
+  async function keluar() {
+    await supabase.auth.signOut()
+    await navigateTo('/')
+  }
   // Hanya untuk menampilkan menu; akses sebenarnya dicek server (requireAdmin)
   const adminPhone = computed(
     () => user.value?.phone?.replace(/\D/g, '') === MANUAL_PAYMENT_ACCOUNT.whatsappIntl
@@ -47,6 +53,13 @@
               Admin
             </NuxtLink>
             <NuxtLink to="/dashboard" class="btn-primary whitespace-nowrap">Dashboard</NuxtLink>
+            <button
+              type="button"
+              class="text-sm text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white"
+              @click="keluar"
+            >
+              Keluar
+            </button>
           </template>
           <template v-else>
             <NuxtLink
