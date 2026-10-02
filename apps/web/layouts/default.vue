@@ -1,6 +1,12 @@
 <script setup lang="ts">
   // Layout utama dengan navbar dan footer
+  import { MANUAL_PAYMENT_ACCOUNT } from '@kuliahpintar/shared'
+
   const user = useSupabaseUser()
+  // Hanya untuk menampilkan menu; akses sebenarnya dicek server (requireAdmin)
+  const adminPhone = computed(
+    () => user.value?.phone?.replace(/\D/g, '') === MANUAL_PAYMENT_ACCOUNT.whatsappIntl
+  )
 </script>
 
 <template>
@@ -26,7 +32,20 @@
           >
             Harga
           </NuxtLink>
+          <NuxtLink
+            to="/ulasan"
+            class="text-sm text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white"
+          >
+            Ulasan
+          </NuxtLink>
           <template v-if="user">
+            <NuxtLink
+              v-if="adminPhone"
+              to="/admin"
+              class="text-sm font-medium text-primary-600 hover:text-primary-700"
+            >
+              Admin
+            </NuxtLink>
             <NuxtLink to="/dashboard" class="btn-primary whitespace-nowrap">Dashboard</NuxtLink>
           </template>
           <template v-else>
@@ -57,6 +76,10 @@
           <span class="text-gray-300 dark:text-gray-700">·</span>
           <NuxtLink to="/alat/daftar-pustaka" class="hover:text-gray-700 dark:hover:text-gray-300">
             Generator Daftar Pustaka
+          </NuxtLink>
+          <span class="text-gray-300 dark:text-gray-700">·</span>
+          <NuxtLink to="/ulasan" class="hover:text-gray-700 dark:hover:text-gray-300">
+            Ulasan
           </NuxtLink>
           <span class="text-gray-300 dark:text-gray-700">·</span>
           <NuxtLink to="/privasi" class="hover:text-gray-700 dark:hover:text-gray-300">

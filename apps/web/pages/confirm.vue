@@ -28,11 +28,24 @@
   let unsubscribeAuthListener: (() => void) | undefined
   let redirecting = false
 
+  // Halaman asal yang minta login (mis. /ulasan) menyimpan tujuan di sessionStorage.
+  // Hanya path internal yang diterima supaya tidak bisa jadi open redirect.
+  function ambilTujuan(): string {
+    try {
+      const tujuan = sessionStorage.getItem('kp_setelah_login')
+      sessionStorage.removeItem('kp_setelah_login')
+      if (tujuan && tujuan.startsWith('/') && !tujuan.startsWith('//')) return tujuan
+    } catch {
+      // sessionStorage tidak tersedia
+    }
+    return '/dashboard'
+  }
+
   function redirectToDashboard() {
     if (redirecting) return
     redirecting = true
     clearTimeout(timer)
-    void navigateTo('/dashboard', { replace: true })
+    void navigateTo(ambilTujuan(), { replace: true })
   }
 
   onMounted(async () => {
