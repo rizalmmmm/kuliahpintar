@@ -1,9 +1,11 @@
-// Route cron — dipanggil terjadwal (GitHub Actions tiap jam, lihat .github/workflows/pengingat-tugas.yml)
+// Route cron — dipanggil terjadwal tiap jam oleh GitHub Actions
+// (.github/workflows/pengingat-tugas.yml dan premium-kedaluwarsa.yml)
 // Diamankan dengan header Authorization: Bearer <CRON_SECRET>.
 import { Hono } from 'hono'
 import { timingSafeEqual } from 'node:crypto'
 import { Resend } from 'resend'
 import { getSupabaseAdmin } from '../lib/supabase.js'
+import { turunkanPremiumKedaluwarsa } from '../lib/premium.js'
 
 export const cronRoutes = new Hono()
 
@@ -129,4 +131,17 @@ cronRoutes.post('/pengingat-tugas', async (c) => {
   }
 
   return c.json({ data: { user: perUser.size, terkirim, gagal } })
+})
+
+// POST /api/v1/cron/premium-kedaluwarsa — turunkan ke gratis Premium yang lewat 30 hari
+cronRoutes.post('/premium-kedaluwarsa', async (c) => {
+  if (!tokenValid(c.req.header('Authorization'))) {
+    return c.json({ error: 'Tidak diizinkan' }, 401)
+  }
+  try {
+    return c.json({ data: await turunkanPremiumKedaluwarsa() })
+  } catch (err) {
+    console.error('Turunkan Premium kedaluwarsa gagal:', err)
+    return c.json({ error: 'Gagal memproses' }, 500)
+  }
 })

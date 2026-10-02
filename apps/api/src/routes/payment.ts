@@ -2,6 +2,7 @@
 import { Hono } from 'hono'
 import { requireAuth } from '../middleware/auth.js'
 import { getSupabaseAdmin } from '../lib/supabase.js'
+import { getTierEfektif } from '../lib/premium.js'
 import { createSnapTransaction, verifyNotificationSignature } from '../lib/midtrans.js'
 import { PREMIUM_PRICE_IDR, PREMIUM_DURATION_DAYS } from '@kuliahpintar/shared'
 import type { AppEnv } from '../types/env.js'
@@ -25,7 +26,7 @@ paymentRoutes.post('/create', requireAuth, async (c) => {
     return c.json({ error: 'Profil tidak ditemukan' }, 404)
   }
 
-  if (profile.tier === 'premium') {
+  if ((await getTierEfektif(userId)) === 'premium') {
     return c.json({ error: 'Kamu sudah berlangganan Premium' }, 409)
   }
 
@@ -82,7 +83,7 @@ paymentRoutes.post('/manual', requireAuth, async (c) => {
     return c.json({ error: 'Profil tidak ditemukan' }, 404)
   }
 
-  if (profile.tier === 'premium') {
+  if ((await getTierEfektif(userId)) === 'premium') {
     return c.json({ error: 'Kamu sudah berlangganan Premium' }, 409)
   }
 

@@ -81,8 +81,12 @@ admin (**082210002535**) + kode OTP SMS, lalu di `/admin`:
 - **Menunggu verifikasi** — pesanan `MANUAL-*`, tombol Aktifkan / Tolak
 - **Aktifkan lewat email** — untuk yang transfer tanpa membuat pesanan
   (memperpanjang 30 hari bila Premium masih aktif)
-- **Premium aktif** — tanggal berakhir, tombol Cabut (belum ada penurunan otomatis
-  saat masa aktif habis)
+- **Premium aktif** — tanggal berakhir, tombol Cabut
+
+Premium turun ke gratis otomatis setelah 30 hari: dicek setiap kali tier dibaca
+(`apps/api/src/lib/premium.ts`) dan disapu tiap jam oleh workflow
+`premium-kedaluwarsa.yml` (`POST /api/v1/cron/premium-kedaluwarsa`). Langganan yang
+habis berstatus `past_due`.
 
 Akses dicek di server (`apps/api/src/middleware/admin.ts`): hanya akun dengan nomor
 HP terverifikasi yang ada di env `ADMIN_PHONES` (default `6282210002535`).

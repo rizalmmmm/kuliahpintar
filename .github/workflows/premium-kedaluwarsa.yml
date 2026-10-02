@@ -1,0 +1,26 @@
+# Turunkan Premium ke gratis setelah masa aktif 30 hari habis — memanggil API tiap jam.
+# Memakai GitHub Secrets yang sama dengan pengingat tugas: API_URL dan CRON_SECRET.
+name: Premium Kedaluwarsa
+
+on:
+  schedule:
+    - cron: '23 * * * *' # tiap jam, menit ke-23
+  workflow_dispatch: {}
+
+jobs:
+  turunkan:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Panggil endpoint premium kedaluwarsa
+        env:
+          API_URL: ${{ secrets.API_URL }}
+          CRON_SECRET: ${{ secrets.CRON_SECRET }}
+        run: |
+          if [ -z "$API_URL" ] || [ -z "$CRON_SECRET" ]; then
+            echo "Secrets API_URL / CRON_SECRET belum di-set — lewati."
+            exit 0
+          fi
+          curl -sS --fail-with-body -X POST \
+            -H "Authorization: Bearer $CRON_SECRET" \
+            "$API_URL/api/v1/cron/premium-kedaluwarsa"

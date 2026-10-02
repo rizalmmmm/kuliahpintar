@@ -2,6 +2,7 @@
 import { Hono } from 'hono'
 import { requireAuth } from '../middleware/auth.js'
 import { getSupabaseAdmin } from '../lib/supabase.js'
+import { getTierEfektif } from '../lib/premium.js'
 import type { AppEnv } from '../types/env.js'
 
 export const authRoutes = new Hono<AppEnv>()
@@ -19,5 +20,6 @@ authRoutes.get('/me', requireAuth, async (c) => {
     return c.json({ error: 'Profil tidak ditemukan' }, 404)
   }
 
-  return c.json({ data })
+  // Tier efektif: Premium yang masa aktifnya habis langsung tampil sebagai gratis
+  return c.json({ data: { ...data, tier: await getTierEfektif(userId) } })
 })

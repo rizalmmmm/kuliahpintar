@@ -1,5 +1,6 @@
 // Rate limiting free tier — 5 AI request per hari (calendar day UTC). Premium: unlimited.
 import { getSupabaseAdmin } from './supabase.js'
+import { getTierEfektif } from './premium.js'
 import type { UsageSummary } from '@kuliahpintar/shared'
 
 const FREE_TIER_LIMIT = 5
@@ -17,23 +18,11 @@ function tomorrowUtcStart(): string {
   return d.toISOString()
 }
 
-async function getUserTier(userId: string): Promise<'free' | 'premium'> {
-  const { data, error } = await getSupabaseAdmin()
-    .from('profiles')
-    .select('tier')
-    .eq('id', userId)
-    .single()
-
-  // Default ke 'free' bila gagal — jangan pernah memberi unlimited karena error
-  if (error || !data) return 'free'
-  return data.tier === 'premium' ? 'premium' : 'free'
-}
-
 export async function checkRateLimit(userId: string): Promise<{
   allowed: boolean
   summary: UsageSummary
 }> {
-  const tier = await getUserTier(userId)
+  const tier = await getTierEfektif(userId)
 
   // Premium: tanpa batas, tidak perlu hitung usage_logs
   if (tier === 'premium') {
