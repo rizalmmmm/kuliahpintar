@@ -58,8 +58,12 @@
       .select('*')
       .order('created_at', { ascending: false })
       .limit(200)
-    if (error) errorMuat.value = 'Gagal memuat ulasan. Coba muat ulang halaman.'
-    else daftar.value = (data ?? []) as Ulasan[]
+    if (error) {
+      errorMuat.value =
+        error.code === '42P01' || error.code === 'PGRST205'
+          ? 'Fitur ulasan belum siap: tabel ulasan belum dibuat di database (migrasi 003).'
+          : 'Gagal memuat ulasan. Coba muat ulang halaman.'
+    } else daftar.value = (data ?? []) as Ulasan[]
     loading.value = false
   }
 
@@ -74,6 +78,25 @@
       provider: 'google',
       options: { redirectTo: `${window.location.origin}/confirm` },
     })
+  }
+
+  // Terjemahkan error Supabase/Postgres jadi pesan yang menunjukkan penyebab sebenarnya
+  function pesanErrorSimpan(error: { code?: string; message?: string }): string {
+    switch (error.code) {
+      case '42P01':
+      case 'PGRST205':
+        return 'Fitur ulasan belum siap: tabel ulasan belum dibuat di database (migrasi 003).'
+      case '42501':
+        return 'Akunmu belum tertaut ke Google. Keluar, lalu masuk lagi dengan Google.'
+      case '23505':
+        return 'Kamu sudah pernah menulis ulasan. Muat ulang halaman untuk mengubahnya.'
+      case '23503':
+        return 'Profil akunmu tidak ditemukan. Keluar lalu masuk lagi, atau hubungi admin.'
+      case '23514':
+        return 'Isi ulasan atau rating tidak valid.'
+      default:
+        return `Gagal menyimpan ulasan: ${error.message ?? 'kesalahan tidak diketahui'}`
+    }
   }
 
   function mulaiEdit() {
@@ -105,7 +128,7 @@
     menyimpan.value = false
 
     if (error) {
-      errorSimpan.value = 'Gagal menyimpan ulasan. Pastikan kamu masuk dengan Google.'
+      errorSimpan.value = pesanErrorSimpan(error)
       return
     }
     sedangEdit.value = false
