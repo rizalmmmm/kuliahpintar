@@ -91,8 +91,9 @@
             pembayaran berhasil.
           </li>
           <li>
-            Pembayaran diproses lewat Midtrans (transfer bank, e-wallet, kartu kredit). Akses
-            Premium aktif setelah pembayaran dikonfirmasi berhasil oleh Midtrans.
+            Saat ini pembayaran dilakukan lewat transfer manual ke rekening BCA a.n. Rizal.A
+            (3728200300), lalu mengirim bukti transfer via WhatsApp ke 082210002535. Akses Premium
+            aktif setelah transfer kami verifikasi, paling lambat 1×24 jam.
           </li>
           <li>
             Premium tidak diperpanjang otomatis — setelah masa 30 hari berakhir, akunmu kembali ke

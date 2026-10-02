@@ -1,5 +1,11 @@
 <script setup lang="ts">
-  import { PREMIUM_PRICE_IDR, formatRupiah } from '@kuliahpintar/shared'
+  import {
+    MANUAL_PAYMENT_ACCOUNT,
+    PREMIUM_PRICE_IDR,
+    formatRupiah,
+    manualPaymentWhatsappUrl,
+    type CreateManualPaymentResponse,
+  } from '@kuliahpintar/shared'
 
   definePageMeta({ layout: 'default' })
   useHead({ title: 'Harga Paket Gratis & Premium' })
@@ -10,10 +16,12 @@
 
   const user = useSupabaseUser()
   const router = useRouter()
-  const { upgradeToPremium } = usePayment()
+  const { createManualOrder } = usePayment()
 
   const memproses = ref(false)
   const errorBayar = ref<string | null>(null)
+  const pesanan = ref<CreateManualPaymentResponse | null>(null)
+  const disalin = ref<string | null>(null)
 
   async function handleUpgrade() {
     // Belum login → arahkan daftar dulu
@@ -26,21 +34,33 @@
     errorBayar.value = null
 
     try {
-      await upgradeToPremium({
-        onSuccess: () => router.push('/pembayaran/selesai?status=success'),
-        onPending: () => router.push('/pembayaran/selesai?status=pending'),
-        onError: () => {
-          errorBayar.value = 'Pembayaran gagal. Silakan coba lagi.'
-        },
-        onClose: () => {
-          memproses.value = false
-        },
-      })
+      pesanan.value = await createManualOrder()
     } catch (err) {
-      errorBayar.value = err instanceof Error ? err.message : 'Gagal memulai pembayaran.'
+      errorBayar.value = err instanceof Error ? err.message : 'Gagal membuat pesanan.'
     } finally {
       memproses.value = false
     }
+  }
+
+  async function salin(teks: string, kunci: string) {
+    try {
+      await navigator.clipboard.writeText(teks)
+      disalin.value = kunci
+      setTimeout(() => (disalin.value = null), 2000)
+    } catch {
+      // Clipboard tidak tersedia — user bisa salin manual
+    }
+  }
+
+  const linkWhatsapp = computed(() =>
+    manualPaymentWhatsappUrl(pesanan.value?.orderId, user.value?.email ?? undefined)
+  )
+
+  function sudahTransfer() {
+    if (!pesanan.value) return
+    // Buka WA untuk kirim bukti transfer, lalu tampilkan halaman status
+    window.open(linkWhatsapp.value, '_blank', 'noopener')
+    router.push(`/pembayaran/selesai?status=manual&order=${pesanan.value.orderId}`)
   }
 
   const fiturFree = [
@@ -135,18 +155,74 @@
           </li>
         </ul>
         <div class="mt-8">
-          <button
-            :disabled="memproses"
-            class="btn-primary block w-full py-2.5 text-center disabled:opacity-60"
-            @click="handleUpgrade"
+          <div
+            v-if="pesanan"
+            class="rounded-lg border border-primary-200 bg-primary-50 p-4 text-sm text-gray-700 dark:border-primary-800 dark:bg-primary-950 dark:text-gray-300"
           >
-            <span v-if="memproses">Memproses...</span>
-            <span v-else>{{ user ? 'Upgrade ke Premium' : 'Mulai Premium' }}</span>
-          </button>
-          <p v-if="errorBayar" class="mt-2 text-center text-xs text-red-500">{{ errorBayar }}</p>
-          <p v-else class="mt-2 text-center text-xs text-gray-400">
-            Pembayaran aman via Midtrans — transfer bank, e-wallet, kartu kredit
-          </p>
+            <p class="font-medium text-gray-900 dark:text-white">Transfer manual ke rekening:</p>
+            <dl class="mt-3 space-y-2">
+              <div class="flex items-center justify-between gap-2">
+                <dt class="text-gray-500">Bank</dt>
+                <dd class="font-medium">{{ MANUAL_PAYMENT_ACCOUNT.bank }}</dd>
+              </div>
+              <div class="flex items-center justify-between gap-2">
+                <dt class="text-gray-500">No. rekening</dt>
+                <dd class="flex items-center gap-2 font-mono font-medium">
+                  {{ MANUAL_PAYMENT_ACCOUNT.accountNumber }}
+                  <button
+                    class="text-xs text-primary-600 hover:underline"
+                    @click="salin(MANUAL_PAYMENT_ACCOUNT.accountNumber, 'rek')"
+                  >
+                    {{ disalin === 'rek' ? 'Tersalin' : 'Salin' }}
+                  </button>
+                </dd>
+              </div>
+              <div class="flex items-center justify-between gap-2">
+                <dt class="text-gray-500">Atas nama</dt>
+                <dd class="font-medium">{{ MANUAL_PAYMENT_ACCOUNT.accountName }}</dd>
+              </div>
+              <div class="flex items-center justify-between gap-2">
+                <dt class="text-gray-500">Jumlah</dt>
+                <dd class="font-medium">{{ formatRupiah(pesanan.amount) }}</dd>
+              </div>
+              <div class="flex items-center justify-between gap-2">
+                <dt class="text-gray-500">Berita transfer</dt>
+                <dd class="flex items-center gap-2 font-mono text-xs font-medium">
+                  {{ pesanan.orderId }}
+                  <button
+                    class="text-xs text-primary-600 hover:underline"
+                    @click="salin(pesanan.orderId, 'order')"
+                  >
+                    {{ disalin === 'order' ? 'Tersalin' : 'Salin' }}
+                  </button>
+                </dd>
+              </div>
+            </dl>
+            <p class="mt-3 text-xs text-gray-500">
+              Cantumkan kode pesanan di berita transfer, lalu kirim bukti transfer via WhatsApp ke
+              {{ MANUAL_PAYMENT_ACCOUNT.whatsappDisplay }}. Premium diaktifkan setelah transfer kami
+              verifikasi (maks. 1×24 jam).
+            </p>
+            <button class="btn-primary mt-4 block w-full py-2.5 text-center" @click="sudahTransfer">
+              Sudah transfer — kirim bukti via WhatsApp
+            </button>
+          </div>
+          <template v-else>
+            <button
+              :disabled="memproses"
+              class="btn-primary block w-full py-2.5 text-center disabled:opacity-60"
+              @click="handleUpgrade"
+            >
+              <span v-if="memproses">Memproses...</span>
+              <span v-else>{{ user ? 'Upgrade ke Premium' : 'Mulai Premium' }}</span>
+            </button>
+            <p v-if="errorBayar" class="mt-2 text-center text-xs text-red-500">
+              {{ errorBayar }}
+            </p>
+            <p v-else class="mt-2 text-center text-xs text-gray-400">
+              Pembayaran via transfer manual ke rekening BCA
+            </p>
+          </template>
         </div>
       </div>
     </div>
@@ -174,8 +250,8 @@
         <div class="card">
           <p class="font-medium text-gray-900 dark:text-white">Metode pembayaran apa saja?</p>
           <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">
-            Nantinya via Midtrans — transfer bank, e-wallet (GoPay, OVO, Dana), dan kartu kredit.
-            Semua harga dalam Rupiah.
+            Saat ini lewat transfer manual ke rekening BCA a.n. Rizal.A. Setelah transfer, Premium
+            diaktifkan maksimal 1×24 jam. Semua harga dalam Rupiah.
           </p>
         </div>
       </div>

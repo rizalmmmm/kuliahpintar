@@ -1,4 +1,4 @@
-// Route pembayaran — Midtrans Snap untuk upgrade Premium + webhook notifikasi
+// Route pembayaran — transfer manual (aktif) + Midtrans Snap & webhook (untuk nanti)
 import { Hono } from 'hono'
 import { requireAuth } from '../middleware/auth.js'
 import { getSupabaseAdmin } from '../lib/supabase.js'
@@ -61,6 +61,60 @@ paymentRoutes.post('/create', requireAuth, async (c) => {
     await db.from('subscriptions').delete().eq('midtrans_order_id', orderId)
     return c.json({ error: 'Gagal menghubungi payment gateway. Coba lagi.' }, 502)
   }
+})
+
+// ============================================================
+// POST /api/v1/payment/manual — pembayaran manual via transfer bank
+// Mencatat pesanan pending; admin mengaktifkan Premium setelah cek mutasi
+// (lihat docs/ARSITEKTUR.md bagian "Pembayaran manual").
+// ============================================================
+paymentRoutes.post('/manual', requireAuth, async (c) => {
+  const userId = c.get('userId')
+  const db = getSupabaseAdmin()
+
+  const { data: profile, error: profileErr } = await db
+    .from('profiles')
+    .select('tier')
+    .eq('id', userId)
+    .single()
+
+  if (profileErr || !profile) {
+    return c.json({ error: 'Profil tidak ditemukan' }, 404)
+  }
+
+  if (profile.tier === 'premium') {
+    return c.json({ error: 'Kamu sudah berlangganan Premium' }, 409)
+  }
+
+  // Pakai ulang pesanan manual yang masih menunggu supaya tidak dobel
+  const { data: existing } = await db
+    .from('subscriptions')
+    .select('midtrans_order_id')
+    .eq('user_id', userId)
+    .eq('status', 'inactive')
+    .like('midtrans_order_id', 'MANUAL-%')
+    .order('created_at', { ascending: false })
+    .limit(1)
+    .maybeSingle()
+
+  if (existing?.midtrans_order_id) {
+    return c.json({ data: { orderId: existing.midtrans_order_id, amount: PREMIUM_PRICE_IDR } })
+  }
+
+  const orderId = `MANUAL-${userId.slice(0, 8)}-${Date.now()}`
+
+  const { error: insertErr } = await db.from('subscriptions').insert({
+    user_id: userId,
+    status: 'inactive',
+    tier: 'premium',
+    midtrans_order_id: orderId,
+  })
+
+  if (insertErr) {
+    return c.json({ error: 'Gagal membuat pesanan. Coba lagi.' }, 500)
+  }
+
+  return c.json({ data: { orderId, amount: PREMIUM_PRICE_IDR } })
 })
 
 // ============================================================
