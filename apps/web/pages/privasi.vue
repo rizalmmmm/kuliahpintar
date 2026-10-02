@@ -34,8 +34,10 @@
             tidak pernah menyimpan atau melihat password-mu dalam bentuk terbuka.
           </li>
           <li>
-            <strong>Status langganan.</strong> Tier akun (gratis/premium), status transaksi, dan ID
-            pesanan dari Midtrans untuk keperluan aktivasi Premium.
+            <strong>Status langganan.</strong> Tier akun (gratis/premium), status transaksi, dan
+            kode pesanan untuk keperluan aktivasi Premium. Untuk transfer manual, kami melihat nama
+            pengirim, jumlah, dan berita transfer di mutasi rekening kami untuk mencocokkan
+            pembayaran.
           </li>
           <li>
             <strong>Data pemakaian.</strong> Setiap kali kamu memakai fitur AI, kami mencatat nama

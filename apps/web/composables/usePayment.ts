@@ -1,5 +1,5 @@
-// Composable pembayaran Midtrans Snap — muat script, buat transaksi, buka popup
-import type { CreatePaymentResponse } from '@kuliahpintar/shared'
+// Composable pembayaran — transfer manual (aktif) dan Midtrans Snap (untuk nanti)
+import type { CreateManualPaymentResponse, CreatePaymentResponse } from '@kuliahpintar/shared'
 
 type SnapCallbacks = {
   onSuccess?: (result: unknown) => void
@@ -50,5 +50,11 @@ export function usePayment() {
     })
   }
 
-  return { upgradeToPremium }
+  /** Pembayaran manual: catat pesanan pending, user transfer ke rekening BCA */
+  async function createManualOrder(): Promise<CreateManualPaymentResponse> {
+    const res = await api.post<{ data: CreateManualPaymentResponse }>('/api/v1/payment/manual', {})
+    return res.data
+  }
+
+  return { upgradeToPremium, createManualOrder }
 }

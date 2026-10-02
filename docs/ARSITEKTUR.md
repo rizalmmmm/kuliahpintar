@@ -39,7 +39,41 @@ Browser/Mobile
 6. Jika valid, lanjut ke handler dengan userId di context
 ```
 
-## Alur Pembayaran (Midtrans)
+## Pembayaran manual (aktif saat ini)
+
+Sementara Midtrans belum dipakai, Premium dibayar lewat transfer manual ke
+**BCA 3728200300 a.n. Rizal.A**.
+
+1. User klik "Upgrade ke Premium" di `/harga`
+2. Frontend panggil `POST /api/v1/payment/manual` → backend mencatat baris
+   `subscriptions` berstatus `inactive` dengan kode `MANUAL-<user>-<timestamp>`
+   (disimpan di kolom `midtrans_order_id`)
+3. User transfer sesuai nominal, mencantumkan kode pesanan di berita transfer,
+   lalu kirim bukti transfer via WhatsApp ke **082210002535** (tombol di web
+   membuka `wa.me` dengan kode pesanan & email akun sudah terisi)
+4. Admin cek bukti WA + mutasi BCA, lalu aktifkan Premium lewat SQL Editor Supabase:
+
+```sql
+-- Ganti kode pesanan sesuai berita transfer
+WITH sub AS (
+  UPDATE subscriptions
+  SET status = 'active', start_date = NOW(), end_date = NOW() + INTERVAL '30 days'
+  WHERE midtrans_order_id = 'MANUAL-xxxxxxxx-0000000000000' AND status = 'inactive'
+  RETURNING user_id
+)
+UPDATE profiles SET tier = 'premium' WHERE id IN (SELECT user_id FROM sub);
+```
+
+Daftar pesanan manual yang menunggu verifikasi:
+
+```sql
+SELECT s.midtrans_order_id, p.email, p.name, s.created_at
+FROM subscriptions s JOIN profiles p ON p.id = s.user_id
+WHERE s.status = 'inactive' AND s.midtrans_order_id LIKE 'MANUAL-%'
+ORDER BY s.created_at DESC;
+```
+
+## Alur Pembayaran (Midtrans — belum aktif)
 
 ```
 1. User klik "Upgrade ke Premium"
