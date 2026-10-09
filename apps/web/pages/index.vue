@@ -6,7 +6,7 @@
 
   const judulSeo = 'KuliahPintar.id — Teman Belajar & Alat Kuliah untuk Mahasiswa Indonesia'
   const deskripsiSeo =
-    'Rangkum materi, latihan soal, flashcard, atur deadline tugas, hitung IPK, dan buat daftar pustaka APA/IEEE otomatis. Gratis untuk mahasiswa Indonesia, langsung dari browser.'
+    'Rangkum materi, kartu hafalan, simulasi ujian, rencana belajar menuju UTS/UAS, atur deadline, simpan materi kuliah, hitung IPK, dan daftar pustaka APA/IEEE otomatis. Gratis untuk mahasiswa Indonesia.'
 
   useHead({ title: judulSeo, titleTemplate: '%s' })
   useSeoMeta({
@@ -17,70 +17,6 @@
     twitterDescription: deskripsiSeo,
   })
 
-  const fiturBelajar = [
-    {
-      ikon: '📄',
-      judul: 'Rangkum Materi',
-      desc: 'Materi panjang jadi ringkasan padat — pilih singkat, detail, atau poin-poin.',
-      to: '/fitur/rangkum',
-    },
-    {
-      ikon: '💬',
-      judul: 'Tanya Materi',
-      desc: 'Bingung dengan konsep kuliah? Tanyakan dan dapatkan penjelasan yang mudah dipahami.',
-      to: '/fitur/tanya',
-    },
-    {
-      ikon: '📝',
-      judul: 'Latihan Soal',
-      desc: 'Soal pilihan ganda atau isian dari materimu sendiri, lengkap dengan pembahasan.',
-      to: '/fitur/latihan',
-    },
-    {
-      ikon: '🃏',
-      judul: 'Flashcard',
-      desc: 'Kartu hafalan istilah dan konsep penting — praktis untuk persiapan ujian.',
-      to: '/fitur/flashcard',
-    },
-    {
-      ikon: '✍️',
-      judul: 'Bantu Tulis',
-      desc: 'Susun kerangka, kembangkan poin, dan rapikan bahasa essay, laporan, atau makalah.',
-      to: '/fitur/tulis',
-    },
-  ]
-
-  const alatKuliah = [
-    {
-      ikon: '🗓️',
-      judul: 'Jadwal & Tugas',
-      desc: 'Semua deadline di satu tempat, diingatkan lewat email sehari sebelumnya.',
-      to: '/alat/jadwal',
-      publik: false,
-    },
-    {
-      ikon: '🎓',
-      judul: 'Kalkulator IPK',
-      desc: 'Hitung IPS & IPK, target IPK, dan nilai UAS minimal yang kamu butuhkan.',
-      to: '/alat/kalkulator-ipk',
-      publik: true,
-    },
-    {
-      ikon: '📚',
-      judul: 'Daftar Pustaka',
-      desc: 'Sitasi APA, IEEE, Harvard, MLA, Chicago otomatis dari DOI atau judul artikel.',
-      to: '/alat/daftar-pustaka',
-      publik: true,
-    },
-    {
-      ikon: '⏱️',
-      judul: 'Timer Fokus',
-      desc: 'Belajar dengan teknik Pomodoro, pantau jam belajar dan streak harianmu.',
-      to: '/alat/fokus',
-      publik: false,
-    },
-  ]
-
   const langkah = [
     {
       no: '1',
@@ -90,19 +26,19 @@
     {
       no: '2',
       judul: 'Masukkan materimu',
-      desc: 'Tempel catatan, slide, atau jurnal. Isi jadwal dan deadline tugasmu.',
+      desc: 'Simpan slide & PDF, isi jadwal dan deadline, lalu buat kartu hafalan atau rencana belajar.',
     },
     {
       no: '3',
       judul: 'Belajar lebih terarah',
-      desc: 'Ringkasan, latihan soal, pengingat, dan IPK — semua rapi di dashboard.',
+      desc: 'Latihan, pengingat, progres belajar, dan IPK — semua rapi di dashboard.',
     },
   ]
 
   const faq = [
     {
       q: 'Apakah KuliahPintar.id gratis?',
-      a: 'Ya. Daftar gratis tanpa kartu kredit. Kalkulator IPK dan Generator Daftar Pustaka bisa dipakai gratis tanpa batas, bahkan tanpa login. Fitur seperti Rangkum Materi dan Latihan Soal punya kuota harian gratis, dan paket Premium tersedia untuk pemakaian tanpa batas.',
+      a: 'Ya. Daftar gratis tanpa kartu kredit. Sebagian besar alat — Kartu Hafalan, Simulasi Ujian, Rencana Belajar, Jadwal & Tugas, Timer Fokus — gratis tanpa batas; Kalkulator IPK dan Daftar Pustaka bahkan bisa dipakai tanpa login. Rangkum Materi, Tanya Materi, Bantu Tulis, serta soal & flashcard otomatis punya kuota harian gratis, dan paket Premium tersedia untuk pemakaian tanpa batas.',
     },
     {
       q: 'Bisa dipakai di HP?',
@@ -114,7 +50,7 @@
     },
     {
       q: 'Apakah data saya aman?',
-      a: 'Jadwal, tugas, dan nilai yang kamu simpan hanya bisa diakses oleh akunmu sendiri. Detailnya ada di halaman Kebijakan Privasi.',
+      a: 'Jadwal, tugas, nilai, kartu hafalan, dan file materi yang kamu simpan hanya bisa diakses oleh akunmu sendiri (kecuali dek kartu yang sengaja kamu bagikan). Detailnya ada di halaman Kebijakan Privasi.',
     },
     {
       q: 'Boleh dipakai untuk mengerjakan tugas kuliah?',
@@ -206,8 +142,8 @@
           <p
             class="mx-auto mt-6 max-w-xl text-lg leading-relaxed text-gray-600 dark:text-gray-400 lg:mx-0"
           >
-            Rangkum materi, latihan soal, atur deadline tugas, hitung IPK, sampai bikin daftar
-            pustaka — cepat, rapi, dan dalam Bahasa Indonesia.
+            Pahami materi, latihan dengan kartu hafalan & simulasi ujian, susun rencana belajar
+            menuju UAS, sampai hitung IPK dan bikin daftar pustaka — rapi, dalam Bahasa Indonesia.
           </p>
 
           <div class="mt-8 flex flex-col gap-3 sm:flex-row sm:justify-center lg:justify-start">
@@ -292,8 +228,10 @@
     <section class="border-y border-gray-100 bg-white py-8 dark:border-gray-800 dark:bg-gray-950">
       <dl class="container mx-auto grid grid-cols-2 gap-6 px-4 text-center md:grid-cols-4">
         <div>
-          <dt class="text-xs text-gray-500">Alat belajar</dt>
-          <dd class="text-2xl font-bold text-gray-900 dark:text-white">9 dalam 1</dd>
+          <dt class="text-xs text-gray-500">Fitur & alat belajar</dt>
+          <dd class="text-2xl font-bold text-gray-900 dark:text-white">
+            {{ JUMLAH_FITUR }} dalam 1
+          </dd>
         </div>
         <div>
           <dt class="text-xs text-gray-500">Bahasa</dt>
@@ -324,50 +262,54 @@
           </p>
         </div>
 
-        <h3 class="mt-14 text-lg font-semibold text-gray-900 dark:text-white">Bantu Belajar</h3>
-        <div class="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          <NuxtLink
-            v-for="f in fiturBelajar"
-            :key="f.to"
-            :to="f.to"
-            class="group rounded-2xl border border-gray-200 bg-white p-6 transition hover:-translate-y-0.5 hover:border-primary-300 hover:shadow-lg dark:border-gray-800 dark:bg-gray-900 dark:hover:border-primary-700"
+        <!-- Pintasan kategori -->
+        <nav class="mt-10 flex flex-wrap justify-center gap-2" aria-label="Kategori fitur">
+          <a
+            v-for="k in KATEGORI_FITUR"
+            :key="k.id"
+            :href="`#fitur-${k.id}`"
+            class="rounded-full border border-gray-200 bg-white px-4 py-1.5 text-sm font-medium text-gray-700 transition hover:border-primary-400 hover:text-primary-700 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300"
           >
-            <span
-              class="flex h-11 w-11 items-center justify-center rounded-xl bg-primary-50 text-xl dark:bg-primary-950"
-            >
-              {{ f.ikon }}
-            </span>
-            <p class="mt-4 font-semibold text-gray-900 dark:text-white">{{ f.judul }}</p>
-            <p class="mt-1 text-sm leading-relaxed text-gray-600 dark:text-gray-400">
-              {{ f.desc }}
-            </p>
-          </NuxtLink>
-        </div>
+            {{ k.ikon }} {{ k.judul }}
+          </a>
+        </nav>
 
-        <h3 class="mt-12 text-lg font-semibold text-gray-900 dark:text-white">Alat Kuliah</h3>
-        <div class="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          <NuxtLink
-            v-for="a in alatKuliah"
-            :key="a.to"
-            :to="a.to"
-            class="group relative rounded-2xl border border-gray-200 bg-white p-6 transition hover:-translate-y-0.5 hover:border-primary-300 hover:shadow-lg dark:border-gray-800 dark:bg-gray-900 dark:hover:border-primary-700"
-          >
-            <span
-              v-if="a.publik"
-              class="absolute right-4 top-4 rounded-full bg-green-100 px-2 py-0.5 text-[10px] font-semibold text-green-700 dark:bg-green-950 dark:text-green-300"
+        <div
+          v-for="k in KATEGORI_FITUR"
+          :id="`fitur-${k.id}`"
+          :key="k.id"
+          class="mt-14 scroll-mt-24"
+        >
+          <div class="flex flex-wrap items-baseline gap-x-3 gap-y-1">
+            <h3 class="text-lg font-semibold text-gray-900 dark:text-white">
+              {{ k.ikon }} {{ k.judul }}
+            </h3>
+            <p class="text-sm text-gray-500">{{ k.desc }}</p>
+          </div>
+          <div class="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            <NuxtLink
+              v-for="f in k.item"
+              :key="f.to"
+              :to="f.to"
+              class="group relative rounded-2xl border border-gray-200 bg-white p-5 transition hover:-translate-y-0.5 hover:border-primary-300 hover:shadow-lg dark:border-gray-800 dark:bg-gray-900 dark:hover:border-primary-700"
             >
-              Tanpa login
-            </span>
-            <span
-              class="flex h-11 w-11 items-center justify-center rounded-xl bg-indigo-50 text-xl dark:bg-indigo-950"
-            >
-              {{ a.ikon }}
-            </span>
-            <p class="mt-4 font-semibold text-gray-900 dark:text-white">{{ a.judul }}</p>
-            <p class="mt-1 text-sm leading-relaxed text-gray-600 dark:text-gray-400">
-              {{ a.desc }}
-            </p>
-          </NuxtLink>
+              <span
+                v-if="f.publik"
+                class="absolute right-4 top-4 rounded-full bg-green-100 px-2 py-0.5 text-[10px] font-semibold text-green-700 dark:bg-green-950 dark:text-green-300"
+              >
+                Tanpa login
+              </span>
+              <span
+                class="flex h-11 w-11 items-center justify-center rounded-xl bg-primary-50 text-xl dark:bg-primary-950"
+              >
+                {{ f.ikon }}
+              </span>
+              <p class="mt-4 font-semibold text-gray-900 dark:text-white">{{ f.judul }}</p>
+              <p class="mt-1 text-sm leading-relaxed text-gray-600 dark:text-gray-400">
+                {{ f.desc }}
+              </p>
+            </NuxtLink>
+          </div>
         </div>
       </div>
     </section>

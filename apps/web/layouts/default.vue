@@ -9,6 +9,31 @@
     await supabase.auth.signOut()
     await navigateTo('/')
   }
+  const footerKolom = [
+    {
+      judul: 'Alat gratis tanpa login',
+      link: [
+        { to: '/alat/kalkulator-ipk', label: 'Kalkulator IPK' },
+        { to: '/alat/daftar-pustaka', label: 'Generator Daftar Pustaka' },
+      ],
+    },
+    {
+      judul: 'Jelajahi',
+      link: [
+        { to: '/#fitur', label: 'Semua fitur' },
+        { to: '/harga', label: 'Harga' },
+        { to: '/ulasan', label: 'Ulasan pengguna' },
+      ],
+    },
+    {
+      judul: 'Legal',
+      link: [
+        { to: '/privasi', label: 'Kebijakan Privasi' },
+        { to: '/ketentuan', label: 'Ketentuan Layanan' },
+      ],
+    },
+  ]
+
   // Hanya untuk menampilkan menu; akses sebenarnya dicek server (requireAdmin)
   const adminPhone = computed(
     () => user.value?.phone?.replace(/\D/g, '') === MANUAL_PAYMENT_ACCOUNT.whatsappIntl
@@ -78,32 +103,34 @@
       <slot />
     </main>
 
-    <footer class="border-t border-gray-200 py-8 dark:border-gray-800">
-      <div
-        class="container mx-auto flex flex-col items-center gap-3 px-4 text-center text-sm text-gray-500"
-      >
-        <nav class="flex flex-wrap items-center justify-center gap-4">
-          <NuxtLink to="/alat/kalkulator-ipk" class="hover:text-gray-700 dark:hover:text-gray-300">
-            Kalkulator IPK
-          </NuxtLink>
-          <span class="text-gray-300 dark:text-gray-700">·</span>
-          <NuxtLink to="/alat/daftar-pustaka" class="hover:text-gray-700 dark:hover:text-gray-300">
-            Generator Daftar Pustaka
-          </NuxtLink>
-          <span class="text-gray-300 dark:text-gray-700">·</span>
-          <NuxtLink to="/ulasan" class="hover:text-gray-700 dark:hover:text-gray-300">
-            Ulasan
-          </NuxtLink>
-          <span class="text-gray-300 dark:text-gray-700">·</span>
-          <NuxtLink to="/privasi" class="hover:text-gray-700 dark:hover:text-gray-300">
-            Kebijakan Privasi
-          </NuxtLink>
-          <span class="text-gray-300 dark:text-gray-700">·</span>
-          <NuxtLink to="/ketentuan" class="hover:text-gray-700 dark:hover:text-gray-300">
-            Ketentuan Layanan
-          </NuxtLink>
-        </nav>
-        <p>© {{ new Date().getFullYear() }} KuliahPintar.id. Hak cipta dilindungi.</p>
+    <footer class="border-t border-gray-200 py-10 dark:border-gray-800">
+      <div class="container mx-auto px-4">
+        <div class="grid gap-8 text-sm sm:grid-cols-2 lg:grid-cols-4">
+          <div>
+            <NuxtLink to="/" class="text-lg font-bold text-primary-600">
+              KuliahPintar<span class="text-gray-900 dark:text-white">.id</span>
+            </NuxtLink>
+            <p class="mt-2 text-gray-500">Teman belajar & alat kuliah untuk mahasiswa Indonesia.</p>
+          </div>
+          <nav v-for="kolom in footerKolom" :key="kolom.judul" :aria-label="kolom.judul">
+            <p class="font-semibold text-gray-900 dark:text-white">{{ kolom.judul }}</p>
+            <ul class="mt-3 space-y-2">
+              <li v-for="l in kolom.link" :key="l.to">
+                <NuxtLink
+                  :to="l.to"
+                  class="text-gray-500 hover:text-gray-800 dark:hover:text-gray-300"
+                >
+                  {{ l.label }}
+                </NuxtLink>
+              </li>
+            </ul>
+          </nav>
+        </div>
+        <p
+          class="mt-8 border-t border-gray-100 pt-6 text-center text-xs text-gray-400 dark:border-gray-800"
+        >
+          © {{ new Date().getFullYear() }} KuliahPintar.id. Hak cipta dilindungi.
+        </p>
       </div>
     </footer>
   </div>
