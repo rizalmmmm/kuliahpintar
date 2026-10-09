@@ -97,6 +97,7 @@
     </div>
 
     <RingkasanHariIni class="mt-6" />
+    <ProgresBelajar class="mt-4" />
 
     <h2 class="mt-10 text-lg font-semibold text-gray-900 dark:text-white">Fitur AI</h2>
     <div class="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">

@@ -31,6 +31,10 @@ export default defineNuxtConfig({
         // Alat publik tanpa login (untuk pengunjung dari Google)
         '/alat/kalkulator-ipk',
         '/alat/daftar-pustaka',
+        // Halaman publik: baca ulasan, dek kartu yang dibagikan, dan halaman masuk admin
+        '/ulasan',
+        '/kartu/*',
+        '/admin/masuk',
       ],
     },
   },

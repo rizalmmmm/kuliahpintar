@@ -40,7 +40,7 @@
           </NuxtLink>
           <NuxtLink
             to="/ulasan"
-            class="text-sm text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white"
+            class="hidden text-sm text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white sm:inline"
           >
             Ulasan
           </NuxtLink>
