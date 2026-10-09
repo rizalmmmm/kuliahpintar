@@ -1,7 +1,7 @@
 <script setup lang="ts">
   // Sesi belajar Kartu Hafalan (Leitner). Kartu yang jatuh tempo ditampilkan acak; benar → naik
   // kotak & dijadwalkan ulang, salah → kembali ke kotak 1 dan diulang lagi di sesi ini.
-  import { jawabKartu, type DekKartu, type Kartu } from '@kuliahpintar/shared'
+  import { jawabKartu, kunciTanggal, type DekKartu, type Kartu } from '@kuliahpintar/shared'
 
   definePageMeta({ middleware: 'auth', layout: 'default' })
   useHead({ title: 'Belajar Kartu Hafalan' })
@@ -79,6 +79,11 @@
       k.kotak = hasil.kotak
       k.jatuh_tempo = hasil.jatuhTempo.toISOString()
     }
+
+    // Catat untuk Progres Belajar (streak & statistik); gagal dicatat tidak mengganggu sesi
+    supabase
+      .rpc('catat_ulang_kartu', { p_tanggal: kunciTanggal(new Date()) })
+      .then(({ error: e }) => e && console.warn('Gagal mencatat aktivitas kartu:', e.message))
 
     antrean.value.shift()
     // Kartu yang salah diulang lagi di akhir sesi sampai benar
