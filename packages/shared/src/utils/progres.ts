@@ -7,6 +7,12 @@ export function kunciTanggal(d: Date): string {
   return `${d.getFullYear()}-${m}-${h}`
 }
 
+/** Kebalikan kunciTanggal: "YYYY-MM-DD" → Date tengah malam waktu lokal */
+export function dariKunciTanggal(kunci: string): Date {
+  const [y, m, d] = kunci.split('-').map(Number) as [number, number, number]
+  return new Date(y, m - 1, d)
+}
+
 function geserHari(d: Date, n: number): Date {
   return new Date(d.getFullYear(), d.getMonth(), d.getDate() + n)
 }
