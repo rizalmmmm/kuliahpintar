@@ -30,6 +30,12 @@
       desc: 'APA, IEEE, Harvard otomatis',
     },
     { to: '/alat/fokus', ikon: '⏱️', judul: 'Timer Fokus', desc: 'Pomodoro + streak belajar' },
+    {
+      to: '/alat/kartu',
+      ikon: '🃏',
+      judul: 'Kartu Hafalan',
+      desc: 'Flashcard + pengulangan Leitner',
+    },
   ]
 
   const usage = ref<UsageSummary | null>(null)
