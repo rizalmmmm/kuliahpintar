@@ -48,6 +48,12 @@
       judul: 'Rencana Belajar',
       desc: 'Jadwal belajar menuju UTS/UAS',
     },
+    {
+      to: '/alat/materi',
+      ikon: '📁',
+      judul: 'Materi Kuliah',
+      desc: 'Simpan PDF & slide per matkul',
+    },
   ]
 
   const usage = ref<UsageSummary | null>(null)

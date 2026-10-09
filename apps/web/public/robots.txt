@@ -10,6 +10,7 @@ Disallow: /alat/fokus
 Disallow: /alat/kartu
 Disallow: /alat/ujian
 Disallow: /alat/rencana
+Disallow: /alat/materi
 Disallow: /confirm
 Disallow: /pembayaran/
 Disallow: /admin

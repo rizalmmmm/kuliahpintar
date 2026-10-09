@@ -173,3 +173,16 @@ export type SesiRencana = {
   selesai_at: string | null
   created_at: string
 }
+
+// ── Materi Kuliah (migrasi 009) ──
+export type MateriKuliah = {
+  id: string
+  user_id: string
+  mata_kuliah: string
+  nama: string
+  /** Path di bucket Storage "materi": <user_id>/<uuid>-<nama file> */
+  path: string
+  ukuran_bytes: number
+  tipe: string | null
+  created_at: string
+}

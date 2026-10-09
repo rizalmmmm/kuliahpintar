@@ -69,11 +69,13 @@
     'Tanya AI (tutor)',
     'Bantu Tulis',
     'Latihan Soal & Flashcard',
+    'Simpan materi kuliah 100 MB',
     'Semua dalam Bahasa Indonesia',
   ]
 
   const fiturPremium = [
     'Request AI tanpa batas',
+    'Simpan materi kuliah hingga 1 GB',
     'Semua fitur tier gratis',
     'Prioritas kecepatan respons',
     'Riwayat percakapan lebih panjang',

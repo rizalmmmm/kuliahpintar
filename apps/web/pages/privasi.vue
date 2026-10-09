@@ -45,6 +45,12 @@
             menghapusnya kapan saja.
           </li>
           <li>
+            <strong>Materi yang kamu unggah.</strong> File materi kuliah (PDF, slide, dokumen)
+            disimpan privat di penyimpanan Supabase dan hanya bisa dibuka olehmu lewat link
+            sementara. Kami tidak membaca, membagikan, atau memakai isinya untuk keperluan lain.
+            File terhapus permanen saat kamu menghapusnya dari halaman Materi Kuliah.
+          </li>
+          <li>
             <strong>Data pemakaian.</strong> Setiap kali kamu memakai fitur AI, kami mencatat nama
             fitur yang dipakai dan waktunya — dipakai untuk menghitung kuota harian tier gratis.
             Kami <strong>tidak menyimpan isi</strong> teks yang kamu masukkan ke fitur AI.
@@ -87,8 +93,8 @@
         </p>
         <ul class="mt-3 list-disc space-y-2 pl-5">
           <li>
-            <strong>Supabase</strong> — menyimpan data akun, status langganan, dan log pemakaian,
-            serta menangani autentikasi (termasuk login Google).
+            <strong>Supabase</strong> — menyimpan data akun, status langganan, log pemakaian, dan
+            file materi yang kamu unggah, serta menangani autentikasi (termasuk login Google).
           </li>
           <li>
             <strong>Google Gemini API</strong> — memproses teks yang kamu masukkan ke fitur AI untuk
