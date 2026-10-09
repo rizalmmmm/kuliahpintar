@@ -10,52 +10,6 @@
   const user = useSupabaseUser()
   const api = useApi()
 
-  const alatBelajar = [
-    {
-      to: '/alat/jadwal',
-      ikon: '🗓️',
-      judul: 'Jadwal & Tugas',
-      desc: 'Deadline + pengingat email H-1',
-    },
-    {
-      to: '/alat/kalkulator-ipk',
-      ikon: '🎓',
-      judul: 'Kalkulator IPK',
-      desc: 'IPS, IPK, target nilai',
-    },
-    {
-      to: '/alat/daftar-pustaka',
-      ikon: '📚',
-      judul: 'Daftar Pustaka',
-      desc: 'APA, IEEE, Harvard otomatis',
-    },
-    { to: '/alat/fokus', ikon: '⏱️', judul: 'Timer Fokus', desc: 'Pomodoro + streak belajar' },
-    {
-      to: '/alat/kartu',
-      ikon: '🃏',
-      judul: 'Kartu Hafalan',
-      desc: 'Flashcard + pengulangan Leitner',
-    },
-    {
-      to: '/alat/ujian',
-      ikon: '📝',
-      judul: 'Simulasi Ujian',
-      desc: 'Pilihan ganda + timer',
-    },
-    {
-      to: '/alat/rencana',
-      ikon: '🗂️',
-      judul: 'Rencana Belajar',
-      desc: 'Jadwal belajar menuju UTS/UAS',
-    },
-    {
-      to: '/alat/materi',
-      ikon: '📁',
-      judul: 'Materi Kuliah',
-      desc: 'Simpan PDF & slide per matkul',
-    },
-  ]
-
   const usage = ref<UsageSummary | null>(null)
   onMounted(async () => {
     try {
@@ -111,53 +65,42 @@
     <RingkasanHariIni class="mt-6" />
     <ProgresBelajar class="mt-4" />
 
-    <h2 class="mt-10 text-lg font-semibold text-gray-900 dark:text-white">Fitur AI</h2>
-    <div class="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-      <div class="card flex flex-col gap-2">
-        <div class="text-2xl">📄</div>
-        <h3 class="font-semibold text-gray-900 dark:text-white">Rangkum Materi</h3>
-        <p class="text-sm text-gray-500">Tempel teks materi kuliah, AI rangkum dalam sekejap.</p>
-        <NuxtLink to="/fitur/rangkum" class="btn-primary mt-auto self-start">Mulai</NuxtLink>
-      </div>
-      <div class="card flex flex-col gap-2">
-        <div class="text-2xl">💬</div>
-        <h3 class="font-semibold text-gray-900 dark:text-white">Tanya AI</h3>
-        <p class="text-sm text-gray-500">Tanyakan apa saja seputar materi kuliah.</p>
-        <NuxtLink to="/fitur/tanya" class="btn-primary mt-auto self-start">Mulai</NuxtLink>
-      </div>
-      <div class="card flex flex-col gap-2">
-        <div class="text-2xl">✍️</div>
-        <h3 class="font-semibold text-gray-900 dark:text-white">Bantu Tulis</h3>
-        <p class="text-sm text-gray-500">Asisten untuk essay dan laporan akademik.</p>
-        <NuxtLink to="/fitur/tulis" class="btn-primary mt-auto self-start">Mulai</NuxtLink>
-      </div>
-      <div class="card flex flex-col gap-2">
-        <div class="text-2xl">📝</div>
-        <h3 class="font-semibold text-gray-900 dark:text-white">Latihan Soal</h3>
-        <p class="text-sm text-gray-500">Buat kuis dari materi untuk persiapan ujian.</p>
-        <NuxtLink to="/fitur/latihan" class="btn-primary mt-auto self-start">Mulai</NuxtLink>
-      </div>
-      <div class="card flex flex-col gap-2">
-        <div class="text-2xl">🃏</div>
-        <h3 class="font-semibold text-gray-900 dark:text-white">Flashcard</h3>
-        <p class="text-sm text-gray-500">Kartu hafalan otomatis dari materi kuliah.</p>
-        <NuxtLink to="/fitur/flashcard" class="btn-primary mt-auto self-start">Mulai</NuxtLink>
-      </div>
+    <!-- Semua fitur, dikelompokkan per kebutuhan (sumber: utils/menuFitur.ts) -->
+    <div class="mt-10 flex flex-wrap items-end justify-between gap-2">
+      <h2 class="text-lg font-semibold text-gray-900 dark:text-white">Semua fitur</h2>
+      <p class="flex items-center gap-1.5 text-xs text-gray-500">
+        <span
+          class="rounded-full bg-amber-100 px-1.5 py-0.5 text-[10px] font-medium text-amber-700 dark:bg-amber-950 dark:text-amber-300"
+          >Kuota</span
+        >
+        = memakai kuota harian · lainnya gratis tanpa batas
+      </p>
     </div>
-    <!-- Alat Belajar (tanpa AI — tidak memotong kuota harian) -->
-    <h2 class="mt-10 text-lg font-semibold text-gray-900 dark:text-white">Alat Belajar</h2>
-    <p class="text-sm text-gray-500">Gratis tanpa batas — tidak memakai kuota AI harian.</p>
-    <div class="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-      <NuxtLink
-        v-for="a in alatBelajar"
-        :key="a.to"
-        :to="a.to"
-        class="card flex flex-col gap-1 transition-colors hover:border-primary-400"
-      >
-        <span class="text-2xl">{{ a.ikon }}</span>
-        <span class="font-semibold text-gray-900 dark:text-white">{{ a.judul }}</span>
-        <span class="text-sm text-gray-500">{{ a.desc }}</span>
-      </NuxtLink>
-    </div>
+    <section v-for="k in KATEGORI_FITUR" :key="k.id" class="mt-6">
+      <h3 class="text-sm font-semibold text-gray-700 dark:text-gray-300">
+        {{ k.ikon }} {{ k.judul }}
+      </h3>
+      <div class="mt-2 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+        <NuxtLink
+          v-for="f in k.item"
+          :key="f.to"
+          :to="f.to"
+          class="card flex items-start gap-3 py-4 transition-colors hover:border-primary-400"
+        >
+          <span class="text-2xl leading-none">{{ f.ikon }}</span>
+          <span class="min-w-0">
+            <span class="flex flex-wrap items-center gap-1.5">
+              <span class="font-semibold text-gray-900 dark:text-white">{{ f.judul }}</span>
+              <span
+                v-if="f.kuota"
+                class="rounded-full bg-amber-100 px-1.5 py-0.5 text-[10px] font-medium text-amber-700 dark:bg-amber-950 dark:text-amber-300"
+                >Kuota</span
+              >
+            </span>
+            <span class="mt-0.5 block text-sm text-gray-500">{{ f.ringkas }}</span>
+          </span>
+        </NuxtLink>
+      </div>
+    </section>
   </div>
 </template>
