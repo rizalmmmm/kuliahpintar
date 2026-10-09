@@ -42,6 +42,12 @@
       judul: 'Simulasi Ujian',
       desc: 'Pilihan ganda + timer',
     },
+    {
+      to: '/alat/rencana',
+      ikon: '🗂️',
+      judul: 'Rencana Belajar',
+      desc: 'Jadwal belajar menuju UTS/UAS',
+    },
   ]
 
   const usage = ref<UsageSummary | null>(null)

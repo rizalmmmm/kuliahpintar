@@ -9,6 +9,7 @@ Disallow: /alat/jadwal
 Disallow: /alat/fokus
 Disallow: /alat/kartu
 Disallow: /alat/ujian
+Disallow: /alat/rencana
 Disallow: /confirm
 Disallow: /pembayaran/
 Disallow: /admin

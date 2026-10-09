@@ -145,3 +145,31 @@ export type HasilUjian = {
   durasi_detik: number
   created_at: string
 }
+
+// ── Rencana Belajar (migrasi 008) ──
+export type RencanaBelajar = {
+  id: string
+  user_id: string
+  judul: string
+  /** "YYYY-MM-DD" */
+  tanggal_ujian: string
+  topik: string[]
+  /** 0 = Minggu … 6 = Sabtu */
+  hari_libur: number[]
+  created_at: string
+  updated_at: string
+}
+
+export type SesiRencana = {
+  id: string
+  rencana_id: string
+  user_id: string
+  /** "YYYY-MM-DD" */
+  tanggal: string
+  judul: string
+  jenis: 'materi' | 'ulang' | 'review'
+  urutan: number
+  selesai: boolean
+  selesai_at: string | null
+  created_at: string
+}
