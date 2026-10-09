@@ -8,6 +8,7 @@ Disallow: /fitur/
 Disallow: /alat/jadwal
 Disallow: /alat/fokus
 Disallow: /alat/kartu
+Disallow: /alat/ujian
 Disallow: /confirm
 Disallow: /pembayaran/
 Disallow: /admin

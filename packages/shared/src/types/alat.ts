@@ -109,3 +109,39 @@ export type Kartu = {
   jatuh_tempo: string
   created_at: string
 }
+
+// ── Simulasi Ujian (migrasi 006) ──
+export type PaketUjian = {
+  id: string
+  user_id: string
+  judul: string
+  deskripsi: string | null
+  durasi_menit: number
+  acak_soal: boolean
+  created_at: string
+  updated_at: string
+}
+
+export type SoalUjian = {
+  id: string
+  paket_id: string
+  user_id: string
+  pertanyaan: string
+  opsi: string[]
+  /** Indeks opsi yang benar (0-based) */
+  kunci: number
+  pembahasan: string | null
+  created_at: string
+}
+
+export type HasilUjian = {
+  id: string
+  user_id: string
+  paket_id: string | null
+  dek_id: string | null
+  judul: string
+  benar: number
+  total: number
+  durasi_detik: number
+  created_at: string
+}

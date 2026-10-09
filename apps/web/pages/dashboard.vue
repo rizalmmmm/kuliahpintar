@@ -36,6 +36,12 @@
       judul: 'Kartu Hafalan',
       desc: 'Flashcard + pengulangan Leitner',
     },
+    {
+      to: '/alat/ujian',
+      ikon: '📝',
+      judul: 'Simulasi Ujian',
+      desc: 'Pilihan ganda + timer',
+    },
   ]
 
   const usage = ref<UsageSummary | null>(null)
