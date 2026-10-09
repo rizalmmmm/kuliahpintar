@@ -86,3 +86,26 @@ export type SitasiResponse = {
   /** Kunci pengurutan (nama belakang penulis pertama / judul) */
   kunciUrut: string
 }
+
+// ── Kartu Hafalan (migrasi 005) ──
+export type DekKartu = {
+  id: string
+  user_id: string
+  judul: string
+  deskripsi: string | null
+  publik: boolean
+  created_at: string
+  updated_at: string
+}
+
+export type Kartu = {
+  id: string
+  dek_id: string
+  user_id: string
+  depan: string
+  belakang: string
+  /** Kotak Leitner 1–5 */
+  kotak: number
+  jatuh_tempo: string
+  created_at: string
+}
